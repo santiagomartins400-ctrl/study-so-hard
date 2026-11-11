@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Study So Hard: carrega os teus manuais e estuda com a ajuda da IA.">
+<meta name="theme-color" content="#6d5cff">
+<title>Study So Hard</title>
+<style>
+:root{
+  --bg:#f3f4f8;
+  --panel:#ffffff;
+  --panel2:#f8f9fc;
+  --line:#e6e8f0;
+  --text:#1b1d29;
+  --muted:#6b7088;
+  --accent:#6d5cff;
+  --accent2:#22d3ee;
+  --radius:18px;
+  --shadow:0 8px 30px rgba(27,29,41,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;line-height:1.5}
+h1,h2,h3{line-height:1.25;margin:0 0 .5em;overflow-wrap:anywhere}
+h1{font-size:1.6rem}
+h2{font-size:1.1rem;margin-top:.6em}
+p{margin:0 0 .75em}
+.sub{color:var(--muted);font-size:.95rem}
+.vazio{color:var(--muted);text-align:center;padding:18px 8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Fundo com brilho animado */
+.glow{position:fixed;inset:-25vmax;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(closest-side,color-mix(in srgb,var(--accent) 22%,transparent),transparent 70%),
+    radial-gradient(closest-side at 78% 72%,color-mix(in srgb,var(--accent2) 20%,transparent),transparent 70%);
+  animation:deriva 22s ease-in-out infinite alternate}
+
+.wrap{width:100%;max-width:980px;margin:0 auto;padding:0 16px;min-width:0;box-sizing:border-box}
+.topo{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--panel) 82%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topo .wrap{padding-top:10px;padding-bottom:8px}
+.marca{display:flex;align-items:center;gap:10px;font-weight:800;margin-bottom:8px}
+.logo{width:36px;height:36px;border-radius:12px;flex:0 0 auto;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 22px color-mix(in srgb,var(--accent) 45%,transparent);animation:respira 3.6s ease-in-out infinite}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tab{font:inherit;font-size:.92rem;border:1px solid transparent;background:transparent;color:var(--muted);border-radius:12px;padding:8px 4px;cursor:pointer;min-width:0;transition:background .25s,color .25s,box-shadow .25s}
+.tab:hover{background:var(--panel2);color:var(--text)}
+.tab[aria-current="page"]{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 35%,transparent)}
+
+main{position:relative;z-index:1;padding:20px 0 70px}
+.vista{display:none}
+.vista.ativa{display:block;animation:entra .3s ease}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;min-width:0;transition:transform .25s,box-shadow .25s}
+.card.ficheiro:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(27,29,41,.12)}
+.stack{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:14px;margin-top:16px}
+.ficheiro-topo{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.ext{font-size:.72rem;font-weight:800;letter-spacing:.06em;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:3px 7px;color:var(--muted)}
+.badge{font-size:.75rem;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.badge.ok{background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
+.badge.off{background:#f1f2f6;color:var(--muted)}
+.ficheiro h3{font-size:1rem;margin-bottom:4px}
+
+.drop{display:block;border:2px dashed var(--line);border-radius:var(--radius);padding:26px 16px;text-align:center;cursor:pointer;background:var(--panel);transition:border-color .25s,background .25s,transform .25s}
+.drop:hover,.drop.sobre{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--panel))}
+.drop.sobre{transform:scale(1.01)}
+.drop small{display:block;color:var(--muted);margin-top:6px}
+.link{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+
+.btn{font:inherit;font-size:.95rem;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;padding:10px 16px;cursor:pointer;text-decoration:none;transition:transform .2s,box-shadow .2s,background .2s,opacity .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(27,29,41,.08)}
+.btn:active{transform:translateY(0)}
+.btn.principal{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 35%,transparent)}
+.btn.principal::after{content:"";position:absolute;inset:-4px;border-radius:16px;border:2px solid var(--accent);opacity:0;animation:pulso 2.4s ease-out infinite;pointer-events:none}
+.btn.perigo{color:#b42318}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn:focus-visible,.tab:focus-visible,.campo:focus-visible,.cartao:focus-visible,.drop:focus-within{outline:3px solid color-mix(in srgb,var(--accent) 50%,transparent);outline-offset:2px}
+.acoes-linha,.linha-form{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.linha-form>.campo{flex:1 1 180px}
+.linha-form.fim{justify-content:flex-end}
+
+.campo{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font:inherit;min-width:0}
+.campo:focus{border-color:var(--accent);background:var(--panel)}
+.rotulo{display:block;font-size:.85rem;font-weight:700;color:var(--muted);margin:10px 0 6px}
+
+.msgs{display:flex;flex-direction:column;gap:10px;max-height:52vh;min-height:200px;overflow-y:auto;overflow-x:hidden;padding:6px 2px;margin-top:12px}
+.bolha{max-width:min(88%,640px);padding:10px 14px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;animation:entra .25s ease}
+.bolha.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-bottom-right-radius:6px}
+.bolha.ia{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:6px}
+.bolha.erro{align-self:stretch;max-width:none;background:#fff1f0;color:#b42318;border:1px solid #ffd2cc}
+.a-pensar::after{content:"…";animation:pontos 1.2s steps(4,end) infinite}
+
+.cartao{display:block;width:100%;height:230px;perspective:1000px;background:none;border:0;padding:0;margin-top:14px;cursor:pointer;font:inherit;color:inherit;text-align:center}
+.cartao-inner{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.cartao.virado .cartao-inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;border-radius:var(--radius);box-shadow:var(--shadow);overflow:auto;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow-wrap:anywhere;font-size:1.05rem}
+.face.frente{background:var(--panel);border:1px solid var(--line)}
+.face.verso{transform:rotateY(180deg);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:0}
+
+.temas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tema{font:inherit;font-size:.85rem;border:2px solid transparent;background:var(--panel2);border-radius:14px;padding:10px 6px;cursor:pointer;color:var(--text);min-width:0;transition:border-color .25s,transform .2s}
+.tema:hover{transform:translateY(-1px)}
+.tema[aria-pressed="true"]{border-color:var(--accent)}
+.tema i{display:block;height:18px;border-radius:9px;margin-bottom:6px;background:linear-gradient(90deg,var(--c1),var(--c2))}
+
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:60;display:grid;gap:8px;width:min(92vw,420px)}
+.toast{padding:12px 14px;border-radius:14px;background:var(--text);color:#fff;box-shadow:var(--shadow);animation:entra .25s ease;overflow-wrap:anywhere}
+.toast.erro{background:#b42318}
+.toast.aviso{background:#9a6700}
+
+dialog{border:0;border-radius:var(--radius);padding:22px;width:min(92vw,400px);max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.25);background:var(--panel);color:var(--text)}
+dialog::backdrop{background:rgba(20,22,35,.35)}
+dialog h2{margin-top:0}
+
+.hero{text-align:center;padding:28px 4px 8px}
+
+@keyframes deriva{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(4vmax,3vmax,0)}}
+@keyframes pulso{0%{transform:scale(.96);opacity:.7}100%{transform:scale(1.12);opacity:0}}
+@keyframes respira{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes pontos{0%{content:"";}100%{content:"…"}}
+
+@media (max-width:520px){
+  h1{font-size:1.4rem}
+  .tab{font-size:.82rem;padding:8px 2px}
+  .temas{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .face{font-size:.98rem}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="topo">
+  <div class="wrap">
+    <div class="marca"><span class="logo" aria-hidden="true"></span><span>Study So Hard</span></div>
+    <nav class="tabs" aria-label="Secções">
+      <button class="tab" type="button" data-vista="inicio" aria-current="page">Início</button>
+      <button class="tab" type="button" data-vista="estudo">Estudo</button>
+      <button class="tab" type="button" data-vista="cartoes">Cartões</button>
+      <button class="tab" type="button" data-vista="definicoes">Definições</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="inicio" class="vista ativa" aria-labelledby="t-inicio">
+    <h1 id="t-inicio">Os teus materiais</h1>
+    <p class="sub">Carrega manuais e apontamentos. A IA responde apenas com base no que carregaste.</p>
+
+    <label id="drop" class="drop" for="ficheiros">
+      <input id="ficheiros" class="sr" type="file" multiple>
+      <strong>Arrasta ficheiros para aqui</strong><br>
+      ou <span class="link">escolhe no computador</span>
+      <small>PDF, Word, PowerPoint, Excel, texto e outros. Máximo de 25 MB por ficheiro.</small>
+    </label>
+
+    <p id="estado-upload" class="sub" aria-live="polite"></p>
+    <p id="aviso" class="bolha erro" hidden></p>
+    <div id="lista" class="grid"></div>
+    <p id="vazio" class="vazio">Ainda não carregaste nenhum ficheiro.</p>
+  </section>
+
+  <section id="estudo" class="vista" aria-labelledby="t-estudo">
+    <h1 id="t-estudo">Estudo</h1>
+    <div class="card">
+      <label class="rotulo" for="sel-estudo">Manual</label>
+      <select id="sel-estudo" class="campo"></select>
+      <div id="msgs" class="msgs" role="log" aria-live="polite"></div>
+      <form id="form-pergunta" class="linha-form" autocomplete="off">
+        <input id="pergunta" class="campo" placeholder="Faz uma pergunta sobre o manual…" maxlength="500">
+        <button id="btn-enviar" class="btn principal" type="submit">Perguntar</button>
+      </form>
+      <p id="estado-estudo" class="sub" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section id="cartoes" class="vista" aria-labelledby="t-cartoes">
+    <h1 id="t-cartoes">Cartões de revisão</h1>
+    <div class="card">
+      <label class="rotulo" for="sel-cartoes">Manual</label>
+      <select id="sel-cartoes" class="campo"></select>
+      <div class="linha-form">
+        <button id="btn-gerar" class="btn principal" type="button">Gerar 8 cartões</button>
+      </div>
+      <div id="area-cartoes"></div>
+    </div>
+  </section>
+
+  <section id="definicoes" class="vista" aria-labelledby="t-definicoes">
+    <h1 id="t-definicoes">Definições</h1>
+    <div class="card stack">
+      <h2>Tema</h2>
+      <div class="temas">
+        <button class="tema" type="button" data-tema="azul" style="--c1:#6d5cff;--c2:#22d3ee" aria-pressed="true"><i></i>Azul</button>
+        <button class="tema" type="button" data-tema="rosa" style="--c1:#ec4899;--c2:#f59e0b" aria-pressed="false"><i></i>Rosa</button>
+        <button class="tema" type="button" data-tema="verde" style="--c1:#10b981;--c2:#06b6d4" aria-pressed="false"><i></i>Verde</button>
+        <button class="tema" type="button" data-tema="laranja" style="--c1:#f97316;--c2:#e11d48" aria-pressed="false"><i></i>Laranja</button>
+      </div>
+
+      <h2>Serviço de IA</h2>
+      <p class="sub">A IA é fornecida pela OpenAI. A tua chave fica guardada apenas neste navegador e é enviada só para a OpenAI.</p>
+      <label class="rotulo" for="chave">Chave de API</label>
+      <div class="linha-form">
+        <input id="chave" class="campo" type="password" autocomplete="off" spellcheck="false" placeholder="sk-…">
+        <button id="btn-mostrar" class="btn" type="button" aria-pressed="false">Mostrar</button>
+      </div>
+      <label class="rotulo" for="modelo">Modelo</label>
+      <select id="modelo" class="campo">
+        <option value="gpt-4o-mini">gpt-4o-mini (rápido e económico)</option>
+        <option value="gpt-4o">gpt-4o (mais capaz)</option>
+      </select>
+      <div class="linha-form">
+        <button id="btn-guardar" class="btn principal" type="button">Guardar definições</button>
+      </div>
+
+      <h2>Dados</h2>
+      <p class="sub">Os ficheiros e as conversas ficam neste navegador.</p>
+      <div class="linha-form">
+        <button id="btn-apagar" class="btn perigo" type="button">Apagar ficheiros e conversas</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<dialog id="dlg" aria-labelledby="dlg-titulo">
+  <h2 id="dlg-titulo"></h2>
+  <p id="dlg-texto"></p>
+  <div class="linha-form fim">
+    <button id="dlg-cancelar" class="btn" type="button">Cancelar</button>
+    <button id="dlg-ok" class="btn principal" type="button">Confirmar</button>
+  </div>
+</dialog>
+
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- Constantes ---------- */
+const PREFIXO = 'sshd:';
+const BD_NOME = 'study-so-hard';
+const LOJA = 'ficheiros';
+const MAX_BYTES = 25 * 1024 * 1024;
+const TEMAS = {
+  azul: ['#6d5cff', '#22d3ee'],
+  rosa: ['#ec4899', '#f59e0b'],
+  verde: ['#10b981', '#06b6d4'],
+  laranja: ['#f97316', '#e11d48']
+};
+const URLS = {
+  pdfjs: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+  pdfjsWorker: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+  mammoth: 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js',
+  xlsx: 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+  jszip: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
+};
+const PALAVRAS_VAZIAS = new Set('a o os as um uma uns umas de do da dos das em no na nos nas e ou que para por com se the and of to in é ao aos à'.split(' '));
+
+/* ---------- Utilitários ---------- */
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+
+function el(tag, props = {}, ...filhos) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v === false || v == null) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? '' : String(v));
+  }
+  for (const f of filhos) {
+    if (f == null || f === false) continue;
+    n.append(f.nodeType ? f : document.createTextNode(String(f)));
+  }
+  return n;
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+}
+
+function formatarTamanho(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return Math.round(bytes / 1024) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+function toast(texto, tipo = 'info') {
+  const t = el('div', { class: 'toast ' + tipo, role: 'status', text: texto });
+  $('#toasts').append(t);
+  setTimeout(() => t.remove(), 4200);
+}
+
+function confirmar(titulo, texto, ok = 'Confirmar') {
+  return new Promise((resolve) => {
+    const d = $('#dlg');
+    const okBtn = $('#dlg-ok');
+    const cancel = $('#dlg-cancelar');
+    $('#dlg-titulo').textContent = titulo;
+    $('#dlg-texto').textContent = texto;
+    okBtn.textContent = ok;
+    const fim = (valor) => {
+      okBtn.onclick = null;
+      cancel.onclick = null;
+      d.oncancel = null;
+      if (d.open) d.close();
+      resolve(valor);
+    };
+    okBtn.onclick = () => fim(true);
+    cancel.onclick = () => fim(false);
+    d.oncancel = (e) => { e.preventDefault(); fim(false); };
+    d.showModal();
+    cancel.focus();
+  });
+}
+
+/* ---------- Armazenamento local (definições e conversas) ---------- */
+function lsLer(chave, padrao) {
+  try {
+    const v = localStorage.getItem(PREFIXO + chave);
+    return v == null ? padrao : JSON.parse(v);
+  } catch (e) {
+    return padrao;
+  }
+}
+
+function lsEscrever(chave, valor) {
+  try {
+    localStorage.setItem(PREFIXO + chave, JSON.stringify(valor));
+    return true;
+  } catch (e) {
+    toast('Não foi possível guardar no navegador. Verifica o espaço disponível.', 'erro');
+    return false;
+  }
+}
+
+function lsApagar(chave) {
+  try { localStorage.removeItem(PREFIXO + chave); } catch (e) { /* ignorar */ }
+}
+
+function obterDefinicoes() {
+  const d = lsLer('definicoes', {});
+  return {
+    apiKey: typeof d.apiKey === 'string' ? d.apiKey : '',
+    model: typeof d.model === 'string' ? d.model : 'gpt-4o-mini',
+    tema: TEMAS[d.tema] ? d.tema : 'azul'
+  };
+}
+
+function guardarDefinicoes(parcial) {
+  return lsEscrever('definicoes', { ...obterDefinicoes(), ...parcial });
+}
+
+function obterConversa(id) {
+  const c = lsLer('conversa:' + id, []);
+  return Array.isArray(c) ? c : [];
+}
+
+function guardarConversa(id, mensagens) {
+  lsEscrever('conversa:' + id, mensagens.slice(-40));
+}
+
+function apagarChavesLocais(filtro) {
+  try {
+    const chaves = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(PREFIXO) && filtro(k)) chaves.push(k);
+    }
+    chaves.forEach((k) => localStorage.removeItem(k));
+  } catch (e) { /* ignorar */ }
+}
+
+/* ---------- IndexedDB (ficheiros e texto extraído) ---------- */
+let bdPromessa = null;
+
+function abrirBD() {
+  if (!bdPromessa) {
+    bdPromessa = new Promise((resolve, reject) => {
+      if (!window.indexedDB) {
+        reject(new Error('Este navegador não permite guardar ficheiros. Experimenta outro navegador.'));
+        return;
+      }
+      const pedido = indexedDB.open(BD_NOME, 1);
+      pedido.onupgradeneeded = () => pedido.result.createObjectStore(LOJA, { keyPath: 'id' });
+      pedido.onsuccess = () => resolve(pedido.result);
+      pedido.onerror = () => reject(pedido.error || new Error('Erro ao abrir o armazenamento.'));
+    }).catch((e) => {
+      bdPromessa = null;
+      throw e;
+    });
+  }
+  return bdPromessa;
+}
+
+async function pedidoBD(modo, operacao) {
+  const bd = await abrirBD();
+  return new Promise((resolve, reject) => {
+    const tx = bd.transaction(LOJA, modo);
+    const pedido = operacao(tx.objectStore(LOJA));
+    tx.oncomplete = () => resolve(pedido ? pedido.result : undefined);
+    tx.onerror = () => reject(tx.error || new Error('Erro no armazenamento.'));
+    tx.onabort = () => reject(tx.error || new Error('Operação cancelada.'));
+  });
+}
+
+const listarBD = async () => (await pedidoBD('readonly', (l) => l.getAll())) || [];
+const guardarBD = (item) => pedidoBD('readwrite', (l) => l.put(item));
+const apagarBD = (id) => pedidoBD('readwrite', (l) => l.delete(id));
+const limparBD = () => pedidoBD('readwrite', (l) => l.clear());
+
+/* ---------- Leitura de ficheiros ---------- */
+const bibliotecas = {};
+
+function carregarScript(url, nome) {
+  if (window[nome]) return Promise.resolve(window[nome]);
+  if (!bibliotecas[nome]) {
+    bibliotecas[nome] = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = url;
+      s.async = true;
+      s.onload = () => window[nome]
+        ? resolve(window[nome])
+        : reject(new Error('A biblioteca de leitura não carregou corretamente.'));
+      s.onerror = () => {
+        bibliotecas[nome] = null;
+        s.remove();
+        reject(new Error('Não consegui carregar a biblioteca de leitura de ficheiros. Verifica a ligação à Internet e tenta outra vez.'));
+      };
+      document.head.append(s);
+    });
+  }
+  return bibliotecas[nome];
+}
+
+async function textoPdf(buffer) {
+  const pdfjs = await carregarScript(URLS.pdfjs, 'pdfjsLib');
+  pdfjs.GlobalWorkerOptions.workerSrc = URLS.pdfjsWorker;
+  const doc = await pdfjs.getDocument({ data: new Uint8Array(buffer) }).promise;
+  const paginas = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const pagina = await doc.getPage(i);
+    const conteudo = await pagina.getTextContent();
+    paginas.push(conteudo.items.map((t) => t.str).join(' '));
+  }
+  return paginas.join('\n\n');
+}
+
+async function textoPptx(buffer) {
+  const JSZip = await carregarScript(URLS.jszip, 'JSZip');
+  const zip = await JSZip.loadAsync(buffer);
+  const nomes = Object.keys(zip.files)
+    .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
+    .sort((a, b) => parseInt(a.match(/\d+/)[0], 10) - parseInt(b.match(/\d+/)[0], 10));
+  const partes = [];
+  for (const nome of nomes) {
+    const xml = await zip.file(nome).async('string');
+    const doc = new DOMParser().parseFromString(xml, 'application/xml');
+    const textos = [...doc.getElementsByTagName('a:t')].map((t) => t.textContent);
+    partes.push(`Diapositivo ${partes.length + 1}:\n` + textos.join(' '));
+  }
+  return partes.join('\n\n');
+}
+
+async function textoFolhas(buffer) {
+  const XLSX = await carregarScript(URLS.xlsx, 'XLSX');
+  const livro = XLSX.read(buffer, { type: 'array' });
+  return livro.SheetNames
+    .map((nome) => `Folha: ${nome}\n` + XLSX.utils.sheet_to_csv(livro.Sheets[nome]))
+    .join('\n\n');
+}
+
+function temBytesNulos(buffer) {
+  return new Uint8Array(buffer, 0, Math.min(buffer.byteLength, 65536)).includes(0);
+}
+
+async function extrairTexto(ficheiro) {
+  const ext = (ficheiro.name.split('.').pop() || '').toLowerCase();
+  const buffer = await ficheiro.arrayBuffer();
+  if (ext === 'pdf') return textoPdf(buffer);
+  if (ext === 'docx') {
+    const mammoth = await carregarScript(URLS.mammoth, 'mammoth');
+    return (await mammoth.extractRawText({ arrayBuffer: buffer })).value;
+  }
+  if (ext === 'pptx') return textoPptx(buffer);
+  if (['xlsx', 'xlsm', 'xltx', 'ods'].includes(ext)) return textoFolhas(buffer);
+  if (['doc', 'ppt', 'xls'].includes(ext)) {
+    throw new Error('Formato antigo. Guarda o ficheiro como .docx, .pptx ou .xlsx e carrega-o outra vez.');
+  }
+  // Texto, código, Markdown, CSV, JSON, HTML e afins. Binários (imagens, áudio, vídeo) ficam sem texto.
+  if (!temBytesNulos(buffer)) return new TextDecoder('utf-8').decode(buffer);
+  return '';
+}
+
+/* ---------- Pedaços de texto e pesquisa ---------- */
+function dividir(texto, tamanho = 1200) {
+  const limpo = texto.replace(/\r/g, '').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  const partes = [];
+  for (let i = 0; i < limpo.length; i += tamanho) partes.push(limpo.slice(i, i + tamanho));
+  return partes;
+}
+
+function termos(texto) {
+  return texto
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .split(/[^a-z0-9]+/)
+    .filter((p) => p.length > 2 && !PALAVRAS_VAZIAS.has(p));
+}
+
+function escolherTrechos(partes, pergunta, k = 6) {
+  const pesquisa = new Set(termos(pergunta));
+  if (!pesquisa.size) return partes.slice(0, k);
+  return partes
+    .map((c, i) => ({ i, c, s: termos(c).filter((t) => pesquisa.has(t)).length }))
+    .sort((a, b) => b.s - a.s || a.i - b.i)
+    .slice(0, k)
+    .sort((a, b) => a.i - b.i)
+    .map((x) => x.c);
+}
+
+function espacar(lista, k) {
+  if (lista.length <= k) return lista;
+  const passo = lista.length / k;
+  return Array.from({ length: k }, (_, i) => lista[Math.floor(i * passo)]);
+}
+
+/* ---------- Serviço de IA ---------- */
+async function perguntarIA(mensagens, json = false) {
+  const { apiKey, model } = obterDefinicoes();
+  if (!apiKey) throw new Error('Falta a chave de API. Vai a Definições e cola a tua chave.');
+
+  let resposta;
+  try {
+    resposta = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model,
+        messages: mensagens,
+        temperature: 0.3,
+        ...(json ? { response_format: { type: 'json_object' } } : {})
+      })
+    });
+  } catch (e) {
+    throw new Error('Sem ligação ao serviço de IA. Verifica a Internet e tenta outra vez.');
+  }
+
+  if (!resposta.ok) {
+    let detalhe = '';
+    try { detalhe = (await resposta.json()).error?.message || ''; } catch (e) { /* sem corpo */ }
+    if (resposta.status === 401) throw new Error('A chave de API foi recusada. Confirma-a nas Definições.');
+    if (resposta.status === 429) throw new Error('Limite de pedidos atingido ou saldo insuficiente na conta da OpenAI. Tenta mais tarde.');
+    throw new Error(`O serviço de IA devolveu um erro (${resposta.status}). ${detalhe}`.trim());
+  }
+
+  const dados = await resposta.json();
+  return (dados.choices?.[0]?.message?.content || '').trim();
+}
+
+/* ---------- Estado ---------- */
+const estado = {
+  ficheiros: [],
+  selEstudo: null,
+  selCartoes: null,
+  cartoes: [],
+  indiceCartao: 0
+};
+
+const ficheiroPorId = (id) => estado.ficheiros.find((f) => f.id === id);
+
+/* ---------- Navegação ---------- */
+function mostrar(nome) {
+  $$('.vista').forEach((s) => s.classList.toggle('ativa', s.id === nome));
+  $$('.tab').forEach((t) => {
+    if (t.dataset.vista === nome) t.setAttribute('aria-current', 'page');
+    else t.removeAttribute('aria-current');
+  });
+  if (nome === 'estudo') renderConversa();
+  if (nome === 'cartoes') renderCartoes();
+}
+
+/* ---------- Início ---------- */
+function renderBiblioteca() {
+  const lista = $('#lista');
+  lista.replaceChildren();
+  $('#vazio').hidden = estado.ficheiros.length > 0;
+
+  for (const f of estado.ficheiros) {
+    const lido = f.estado === 'lido';
+    const extensao = (f.name.split('.').pop() || 'ficheiro').slice(0, 5).toUpperCase();
+    lista.append(el('article', { class: 'card ficheiro' },
+      el('div', { class: 'ficheiro-topo' },
+        el('span', { class: 'ext', text: extensao }),
+        el('span', { class: 'badge ' + (lido ? 'ok' : 'off'), text: lido ? 'Pronto a estudar' : 'Sem texto legível' })),
+      el('h3', { text: f.name }),
+      el('p', { class: 'sub', text: formatarTamanho(f.size) + (f.erro ? ' · ' + f.erro : '') }),
+      el('div', { class: 'acoes-linha' },
+        el('button', { class: 'btn principal', type: 'button', disabled: !lido, text: 'Estudar',
+          onclick: () => { estado.selEstudo = f.id; renderSeletores(); mostrar('estudo'); } }),
+        el('button', { class: 'btn', type: 'button', disabled: !lido, text: 'Cartões',
+          onclick: () => { estado.selCartoes = f.id; renderSeletores(); mostrar('cartoes'); } }),
+        el('button', { class: 'btn perigo', type: 'button', text: 'Apagar',
+          onclick: () => apagarFicheiro(f) }))
+    ));
+  }
+}
+
+async function adicionarFicheiros(lista) {
+  const estadoUpload = $('#estado-upload');
+  for (const f of lista) {
+    if (f.size > MAX_BYTES) {
+      toast(`«${f.name}» é demasiado grande (máximo 25 MB).`, 'erro');
+      continue;
+    }
+    estadoUpload.textContent = `A ler «${f.name}»…`;
+    let texto = '';
+    let erro = '';
+    try {
+      texto = (await extrairTexto(f)).trim();
+      if (!texto) erro = 'Não encontrei texto legível neste ficheiro (imagens, áudio e vídeo ainda não são lidos).';
+    } catch (e) {
+      erro = e.message || 'Não consegui ler este ficheiro.';
+    }
+    const item = { id: uid(), name: f.name, size: f.size, addedAt: Date.now(), estado: texto ? 'lido' : 'sem-leitura', texto, erro };
+    try {
+      await guardarBD(item);
+    } catch (e) {
+      toast(`Não consegui guardar «${f.name}» neste navegador.`, 'erro');
+    }
+  }
+  estadoUpload.textContent = '';
+  await carregarFicheiros();
+}
+
+async function apagarFicheiro(f) {
+  const confirmado = await confirmar(
+    'Apagar «' + f.name + '»?',
+    'O ficheiro, a conversa e os cartões associados serão apagados deste navegador. Esta ação não pode ser desfeita.',
+    'Apagar'
+  );
+  if (!confirmado) return;
+  try {
+    await apagarBD(f.id);
+    lsApagar('conversa:' + f.id);
+    toast('Ficheiro apagado.');
+  } catch (e) {
+    toast('Não consegui apagar o ficheiro. Tenta outra vez.', 'erro');
+  }
+  await carregarFicheiros();
+}
+
+async function carregarFicheiros() {
+  try {
+    estado.ficheiros = (await listarBD()).sort((a, b) => b.addedAt - a.addedAt);
+    $('#aviso').hidden = true;
+  } catch (e) {
+    estado.ficheiros = [];
+    const aviso = $('#aviso');
+    aviso.textContent = 'Não foi possível abrir os teus ficheiros neste navegador. ' + (e.message || '') + ' Confirma que o navegador não está em modo privado com o armazenamento bloqueado.';
+    aviso.hidden = false;
+  }
+  renderBiblioteca();
+  renderSeletores();
+}
+
+/* ---------- Seletores ---------- */
+function renderSeletores() {
+  const lidos = estado.ficheiros.filter((f) => f.estado === 'lido');
+  for (const [sel, chave] of [[$('#sel-estudo'), 'selEstudo'], [$('#sel-cartoes'), 'selCartoes']]) {
+    const atual = lidos.some((f) => f.id === estado[chave]) ? estado[chave] : (lidos[0] ? lidos[0].id : null);
+    estado[chave] = atual;
+    if (lidos.length) {
+      sel.replaceChildren(...lidos.map((f) => el('option', { value: f.id, text: f.name, selected: f.id === atual })));
+    } else {
+      sel.replaceChildren(el('option', { value: '', text: 'Nenhum ficheiro legível' }));
+    }
+    sel.disabled = !lidos.length;
+  }
+  renderConversa();
+}
+
+/* ---------- Estudo ---------- */
+function renderConversa() {
+  const caixa = $('#msgs');
+  caixa.replaceChildren();
+  const item = ficheiroPorId(estado.selEstudo);
+  if (!item) {
+    caixa.append(el('p', { class: 'vazio', text: 'Carrega um manual na página Início para começar.' }));
+    return;
+  }
+  const mensagens = obterConversa(item.id);
+  if (!mensagens.length) {
+    caixa.append(el('p', { class: 'vazio', text: `Pergunta o que quiseres sobre «${item.name}». Respondo com base no texto desse ficheiro.` }));
+  }
+  for (const m of mensagens) {
+    caixa.append(el('div', { class: 'bolha ' + (m.role === 'user' ? 'user' : m.erro ? 'erro' : 'ia'), text: m.text }));
+  }
+  caixa.scrollTop = caixa.scrollHeight;
+}
+
+function definirOcupadoEstudo(ocupado) {
+  $('#btn-enviar').disabled = ocupado;
+  const estadoEl = $('#estado-estudo');
+  estadoEl.textContent = ocupado ? 'A pensar' : '';
+  estadoEl.classList.toggle('a-pensar', ocupado);
+}
+
+async function enviarPergunta(evento) {
+  evento.preventDefault();
+  const input = $('#pergunta');
+  const pergunta = input.value.trim();
+  if (!pergunta) return;
+  const item = ficheiroPorId(estado.selEstudo);
+  if (!item) {
+    toast('Escolhe um manual com texto legível primeiro.', 'aviso');
+    return;
+  }
+
+  const mensagens = obterConversa(item.id);
+  mensagens.push({ role: 'user', text: pergunta });
+  guardarConversa(item.id, mensagens);
+  input.value = '';
+  definirOcupadoEstudo(true);
+  renderConversa();
+
+  try {
+    const trechos = escolherTrechos(dividir(item.texto), pergunta, 6).join('\n---\n');
+    const historico = mensagens
+      .slice(-7, -1)
+      .filter((m) => !m.erro)
+      .map((m) => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }));
+    const resposta = await perguntarIA([
+      {
+        role: 'system',
+        content: `Respondes em português europeu, de forma clara e didática. Usa apenas os trechos fornecidos do documento «${item.name}». Se a resposta não estiver nos trechos, diz isso com clareza e sugere o que procurar. Não inventes factos.`
+      },
+      ...historico,
+      { role: 'user', content: `Trechos do documento:\n${trechos}\n\nPergunta: ${pergunta}` }
+    ]);
+    mensagens.push({ role: 'assistant', text: resposta || 'Não obtive resposta. Tenta reformular a pergunta.' });
+  } catch (e) {
+    mensagens.push({ role: 'assistant', text: e.message, erro: true });
+  }
+
+  guardarConversa(item.id, mensagens);
+  definirOcupadoEstudo(false);
+  renderConversa();
+}
+
+/* ---------- Cartões ---------- */
+async function gerarCartoes() {
+  const item = ficheiroPorId(estado.selCartoes);
+  if (!item) return;
+  const botao = $('#btn-gerar');
+  const area = $('#area-cartoes');
+  botao.disabled = true;
+  area.replaceChildren(el('p', { class: 'sub a-pensar', text: 'A criar cartões' }));
+
+  try {
+    const amostra = espacar(dividir(item.texto, 2000), 6).join('\n---\n');
+    const raw = await perguntarIA([
+      {
+        role: 'system',
+        content: 'És um assistente de estudo em português europeu. Respondes apenas com JSON válido no formato {"cartoes":[{"pergunta":"…","resposta":"…"}]}. Usa apenas o texto fornecido.'
+      },
+      { role: 'user', content: `Cria 8 cartões de revisão a partir deste texto:\n\n${amostra}` }
+    ], true);
+
+    let dados;
+    try {
+      dados = JSON.parse(raw);
+    } catch (e) {
+      throw new Error('A IA devolveu uma resposta que não consegui ler. Tenta outra vez.');
+    }
+    const lista = (Array.isArray(dados?.cartoes) ? dados.cartoes : [])
+      .filter((c) => c && typeof c.pergunta === 'string' && typeof c.resposta === 'string')
+      .slice(0, 12);
+    if (!lista.length) throw new Error('Não consegui criar cartões a partir deste ficheiro.');
+
+    estado.cartoes = lista;
+    estado.indiceCartao = 0;
+    renderCartoes();
+  } catch (e) {
+    area.replaceChildren(el('p', { class: 'bolha erro', text: e.message }));
+  } finally {
+    botao.disabled = false;
+  }
+}
+
+function renderCartoes() {
+  const area = $('#area-cartoes');
+  if (!estado.cartoes.length) {
+    area.replaceChildren();
+    return;
+  }
+  const total = estado.cartoes.length;
+  const i = estado.indiceCartao;
+  const c = estado.cartoes[i];
+
+  const cartao = el('button', {
+    class: 'cartao',
+    type: 'button',
+    'aria-label': 'Cartão ' + (i + 1) + ': toca para ver a resposta',
+    onclick: (e) => e.currentTarget.classList.toggle('virado')
+  },
+    el('span', { class: 'cartao-inner' },
+      el('span', { class: 'face frente', text: c.pergunta }),
+      el('span', { class: 'face verso', text: c.resposta })));
+
+  area.replaceChildren(
+    el('p', { class: 'sub', text: `Cartão ${i + 1} de ${total} · toca no cartão para virar` }),
+    cartao,
+    el('div', { class: 'linha-form fim' },
+      el('button', { class: 'btn', type: 'button', disabled: i === 0, text: 'Anterior',
+        onclick: () => { estado.indiceCartao = i - 1; renderCartoes(); } }),
+      el('button', { class: 'btn principal', type: 'button', disabled: i === total - 1, text: 'Seguinte',
+        onclick: () => { estado.indiceCartao = i + 1; renderCartoes(); } }))
+  );
+}
+
+/* ---------- Definições ---------- */
+function aplicarTema(nome) {
+  const [a, b] = TEMAS[nome] || TEMAS.azul;
+  const raiz = document.documentElement.style;
+  raiz.setProperty('--accent', a);
+  raiz.setProperty('--accent2', b);
+  $$('[data-tema]').forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.tema === nome)));
+}
+
+function preencherDefinicoes() {
+  const d = obterDefinicoes();
+  $('#chave').value = d.apiKey;
+  $('#modelo').value = d.model;
+  aplicarTema(d.tema);
+}
+
+async function apagarTudo() {
+  const confirmado = await confirmar(
+    'Apagar todos os ficheiros?',
+    'Os ficheiros, as conversas e os cartões guardados neste navegador serão apagados. As definições mantêm-se. Esta ação não pode ser desfeita.',
+    'Apagar tudo'
+  );
+  if (!confirmado) return;
+  try {
+    await limparBD();
+  } catch (e) {
+    toast('Não consegui apagar os ficheiros. Tenta outra vez.', 'erro');
+    return;
+  }
+  apagarChavesLocais((k) => k.startsWith(PREFIXO + 'conversa:'));
+  estado.cartoes = [];
+  estado.selEstudo = null;
+  estado.selCartoes = null;
+  toast('Dados apagados.');
+  await carregarFicheiros();
+  renderCartoes();
+}
+
+/* ---------- Ligação de eventos ---------- */
+function ligarEventos() {
+  $$('.tab').forEach((t) => t.addEventListener('click', () => mostrar(t.dataset.vista)));
+
+  const drop = $('#drop');
+  const input = $('#ficheiros');
+  input.addEventListener('change', () => {
+    const lista = Array.from(input.files || []);
+    input.value = '';
+    if (lista.length) adicionarFicheiros(lista);
+  });
+  ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => {
+    e.preventDefault();
+    drop.classList.add('sobre');
+  }));
+  ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => {
+    e.preventDefault();
+    drop.classList.remove('sobre');
+  }));
+  drop.addEventListener('drop', (e) => {
+    const lista = Array.from(e.dataTransfer?.files || []);
+    if (lista.length) adicionarFicheiros(lista);
+  });
+
+  $('#sel-estudo').addEventListener('change', (e) => { estado.selEstudo = e.target.value; renderConversa(); });
+  $('#sel-cartoes').addEventListener('change', (e) => {
+    estado.selCartoes = e.target.value;
+    estado.cartoes = [];
+    renderCartoes();
+  });
+  $('#form-pergunta').addEventListener('submit', enviarPergunta);
+  $('#btn-gerar').addEventListener('click', gerarCartoes);
+
+  $$('[data-tema]').forEach((btn) => btn.addEventListener('click', () => {
+    guardarDefinicoes({ tema: btn.dataset.tema });
+    aplicarTema(btn.dataset.tema);
+  }));
+  $('#btn-mostrar').addEventListener('click', (e) => {
+    const campo = $('#chave');
+    const mostrar = campo.type === 'password';
+    campo.type = mostrar ? 'text' : 'password';
+    e.currentTarget.textContent = mostrar ? 'Ocultar' : 'Mostrar';
+    e.currentTarget.setAttribute('aria-pressed', String(mostrar));
+  });
+  $('#btn-guardar').addEventListener('click', () => {
+    const chave = $('#chave').value.trim();
+    const modelo = $('#modelo').value;
+    if (guardarDefinicoes({ apiKey: chave, model: modelo })) toast('Definições guardadas.');
+  });
+  $('#btn-apagar').addEventListener('click', apagarTudo);
+}
+
+/* ---------- Arranque ---------- */
+ligarEventos();
+preencherDefinicoes();
+carregarFicheiros();
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(() => { /* funciona sem cache offline */ });
+}
+})();
+</script>
+</body>
+</html>
