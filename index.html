@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Study So Hard: carrega os teus manuais e estuda com a ajuda da IA. Usa no navegador ou instala no Windows.">
+<meta name="theme-color" content="#6d5cff">
+<title>Study So Hard</title>
+<style>
+:root{
+  --bg:#f3f4f8;
+  --panel:#ffffff;
+  --panel2:#f8f9fc;
+  --line:#e6e8f0;
+  --text:#1b1d29;
+  --muted:#6b7088;
+  --accent:#6d5cff;
+  --accent2:#22d3ee;
+  --radius:18px;
+  --shadow:0 8px 30px rgba(27,29,41,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;line-height:1.55}
+.glow{position:fixed;inset:-25vmax;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(closest-side,color-mix(in srgb,var(--accent) 24%,transparent),transparent 70%),
+    radial-gradient(closest-side at 80% 70%,color-mix(in srgb,var(--accent2) 22%,transparent),transparent 70%);
+  animation:deriva 22s ease-in-out infinite alternate}
+.wrap{position:relative;z-index:1;width:100%;max-width:880px;margin:0 auto;padding:0 16px;min-width:0}
+header{display:flex;align-items:center;gap:10px;padding:18px 0;font-weight:800}
+.logo{width:36px;height:36px;border-radius:12px;flex:0 0 auto;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 22px color-mix(in srgb,var(--accent) 45%,transparent);animation:respira 3.6s ease-in-out infinite}
+.hero{text-align:center;padding:30px 0 26px}
+h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.15;margin:0 0 12px;overflow-wrap:anywhere}
+.destaque{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);font-size:1.05rem;max-width:58ch;margin:0 auto}
+.acoes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0 10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;min-width:0;transition:transform .25s,box-shadow .25s}
+.card:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(27,29,41,.12)}
+.card h2{font-size:1.1rem;margin:0 0 6px}
+.card p{margin:0 0 14px;color:var(--muted);font-size:.95rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;max-width:100%;text-align:center;font:inherit;font-weight:700;border-radius:12px;padding:11px 16px;text-decoration:none;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 35%,transparent);position:relative;transition:transform .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn.sec{background:var(--panel2);color:var(--text);border:1px solid var(--line);box-shadow:none}
+.btn.principal::after{content:"";position:absolute;inset:-4px;border-radius:16px;border:2px solid var(--accent);opacity:0;animation:pulso 2.4s ease-out infinite;pointer-events:none}
+.btn:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 50%,transparent);outline-offset:2px}
+.nota{font-size:.88rem;color:var(--muted);text-align:center;margin:8px 0 0}
+ul.passos{padding-left:1.2em;margin:0;color:var(--muted)}
+ul.passos li{margin-bottom:6px}
+section{margin:26px 0}
+section h2{font-size:1.2rem;margin:0 0 12px}
+footer{color:var(--muted);font-size:.85rem;text-align:center;padding:30px 0 40px}
+@media (max-width:560px){.acoes{grid-template-columns:minmax(0,1fr)}}
+@keyframes deriva{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(4vmax,3vmax,0)}}
+@keyframes pulso{0%{transform:scale(.96);opacity:.7}100%{transform:scale(1.12);opacity:0}}
+@keyframes respira{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+<div class="wrap">
+  <header><span class="logo" aria-hidden="true"></span><span>Study So Hard</span></header>
+
+  <div class="hero">
+    <h1>Estuda com os <span class="destaque">teus manuais</span></h1>
+    <p class="lead">Carrega o manual ou os teus apontamentos e faz perguntas. A IA responde apenas com base no que carregaste, e podes gerar cartões de revisão.</p>
+  </div>
+
+  <div class="acoes">
+    <div class="card">
+      <h2>Usar no navegador</h2>
+      <p>Sem instalar nada. Funciona no computador e no telemóvel.</p>
+      <a class="btn principal" href="app.html">Abrir a aplicação</a>
+    </div>
+    <div class="card">
+      <h2>Instalar no Windows</h2>
+      <p>Instalador para Windows 10 e 11. Abre-se como uma aplicação normal.</p>
+      <a class="btn sec" href="https://github.com/santiagomartins400-ctrl/study-so-hard/releases/latest">Descarregar instalador <span data-versao>v1.0.0</span></a>
+    </div>
+  </div>
+  <p class="nota">O instalador é descarregado do GitHub. Como não tem assinatura digital, o Windows pode mostrar um aviso: escolhe «Mais informações» e depois «Executar mesmo assim».</p>
+
+  <section>
+    <h2>Como instalar no Windows</h2>
+    <ul class="passos">
+      <li>Abre a página de versões e descarrega o ficheiro <strong>Study-So-Hard-Setup</strong> (.exe).</li>
+      <li>Executa o instalador e segue os passos. Pode escolher a pasta de instalação.</li>
+      <li>Abre o Study So Hard pelo atalho no ambiente de trabalho ou no menu Iniciar.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Privacidade</h2>
+    <p class="nota" style="text-align:left">Os ficheiros e as conversas ficam guardados no teu navegador ou computador. O texto das perguntas e partes do manual são enviados à OpenAI para gerar as respostas, com a tua chave de API.</p>
+  </section>
+
+  <footer>Study So Hard · <span data-versao>v1.0.0</span></footer>
+</div>
+</body>
+</html>

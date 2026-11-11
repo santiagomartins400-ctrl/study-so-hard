@@ -1,0 +1,46 @@
+{
+  "name": "study-so-hard",
+  "productName": "Study So Hard",
+  "version": "1.0.0",
+  "description": "Study So Hard para Windows",
+  "author": "Study So Hard",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win nsis --publish never"
+  },
+  "devDependencies": {
+    "electron": "31.7.7",
+    "electron-builder": "24.13.3"
+  },
+  "build": {
+    "appId": "pt.studysohard.app",
+    "productName": "Study So Hard",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "package.json",
+      "app/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Study So Hard",
+      "artifactName": "Study-So-Hard-Setup-${version}.${ext}"
+    }
+  }
+}
