@@ -2,7 +2,7 @@
  * Páginas e /data/: network-first (com recurso à cache se estiver offline).
  * Restantes recursos: cache-first.
  * Ao alterar a aplicação, sobe o nome da cache (ver scripts/bump-version.mjs). */
-const CACHE = 'app-v1-1';
+const CACHE = 'app-v1-2';
 const PRECACHE = ['./', './index.html', './app.html'];
 
 self.addEventListener('install', (event) => {

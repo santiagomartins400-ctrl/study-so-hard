@@ -42,12 +42,15 @@ p{margin:0 0 .75em}
 .topo .wrap{padding-top:10px;padding-bottom:8px}
 .marca{display:flex;align-items:center;gap:10px;font-weight:800;margin-bottom:8px}
 .logo{width:36px;height:36px;border-radius:12px;flex:0 0 auto;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 22px color-mix(in srgb,var(--accent) 45%,transparent);animation:respira 3.6s ease-in-out infinite}
-.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.app{position:relative;z-index:1;display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh;width:100%}
+.lateral{position:sticky;top:0;height:100vh;padding:24px 14px;display:flex;flex-direction:column;background:var(--panel);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border-right:1px solid var(--line);min-width:0}
+.tabs{display:flex;flex-direction:column;gap:6px}
 .tab{font:inherit;font-size:.92rem;border:1px solid transparent;background:transparent;color:var(--muted);border-radius:12px;padding:8px 4px;cursor:pointer;min-width:0;transition:background .25s,color .25s,box-shadow .25s}
 .tab:hover{background:var(--panel2);color:var(--text)}
 .tab[aria-current="page"]{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 35%,transparent)}
 
-main{position:relative;z-index:1;padding:20px 0 70px}
+.tabs .tab{text-align:left;padding:11px 14px;font-size:.98rem;border-radius:14px}
+main{position:relative;z-index:1;padding:28px 0 70px;min-width:0}
 .vista{display:none}
 .vista.ativa{display:block;animation:entra .3s ease}
 
@@ -121,9 +124,14 @@ dialog h2{margin-top:0}
 @keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes pontos{0%{content:"";}100%{content:"…"}}
 
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr);padding-bottom:84px}
+  .lateral{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;flex-direction:row;padding:8px 10px calc(8px + env(safe-area-inset-bottom));border-right:0;border-top:1px solid var(--line);z-index:20}
+  .tabs{flex-direction:row;width:100%;gap:4px}
+  .tabs .tab{flex:1;text-align:center;padding:9px 2px;font-size:.8rem}
+}
 @media (max-width:520px){
   h1{font-size:1.4rem}
-  .tab{font-size:.82rem;padding:8px 2px}
   .temas{grid-template-columns:repeat(2,minmax(0,1fr))}
   .face{font-size:.98rem}
 }
@@ -135,17 +143,15 @@ dialog h2{margin-top:0}
 <body>
 <div class="glow" aria-hidden="true"></div>
 
-<header class="topo">
-  <div class="wrap">
-    <div class="marca"><span class="logo" aria-hidden="true"></span><span>Study So Hard</span></div>
-    <nav class="tabs" aria-label="Secções">
-      <button class="tab" type="button" data-vista="inicio" aria-current="page">Início</button>
-      <button class="tab" type="button" data-vista="estudo">Estudo</button>
-      <button class="tab" type="button" data-vista="cartoes">Cartões</button>
-      <button class="tab" type="button" data-vista="definicoes">Definições</button>
-    </nav>
-  </div>
-</header>
+<div class="app">
+<aside class="lateral">
+  <nav class="tabs" aria-label="Secções">
+    <button class="tab" type="button" data-vista="inicio" aria-current="page">Início</button>
+    <button class="tab" type="button" data-vista="estudo">Estudo</button>
+    <button class="tab" type="button" data-vista="cartoes">Cartões</button>
+    <button class="tab" type="button" data-vista="definicoes">Definições</button>
+  </nav>
+</aside>
 
 <main class="wrap">
 
@@ -168,14 +174,18 @@ dialog h2{margin-top:0}
 
   <section id="estudo" class="vista" aria-labelledby="t-estudo">
     <h1 id="t-estudo">Estudo</h1>
+    <p class="sub">Tira as tuas dúvidas de qualquer matéria, com explicações passo a passo.</p>
     <div class="card">
-      <label class="rotulo" for="sel-estudo">Manual</label>
-      <select id="sel-estudo" class="campo"></select>
+      <label class="rotulo" for="materia">Matéria (opcional)</label>
+      <input id="materia" class="campo" maxlength="80" placeholder="ex.: Matemática – derivadas">
       <div id="msgs" class="msgs" role="log" aria-live="polite"></div>
       <form id="form-pergunta" class="linha-form" autocomplete="off">
-        <input id="pergunta" class="campo" placeholder="Faz uma pergunta sobre o manual…" maxlength="500">
+        <input id="pergunta" class="campo" placeholder="Qual é a tua dúvida?" maxlength="800">
         <button id="btn-enviar" class="btn principal" type="submit">Perguntar</button>
       </form>
+      <div class="linha-form fim">
+        <button id="btn-limpar-chat" class="btn" type="button">Limpar conversa</button>
+      </div>
       <p id="estado-estudo" class="sub" aria-live="polite"></p>
     </div>
   </section>
@@ -228,6 +238,7 @@ dialog h2{margin-top:0}
   </section>
 
 </main>
+</div>
 
 <dialog id="dlg" aria-labelledby="dlg-titulo">
   <h2 id="dlg-titulo"></h2>
@@ -606,8 +617,6 @@ function renderBiblioteca() {
       el('h3', { text: f.name }),
       el('p', { class: 'sub', text: formatarTamanho(f.size) + (f.erro ? ' · ' + f.erro : '') }),
       el('div', { class: 'acoes-linha' },
-        el('button', { class: 'btn principal', type: 'button', disabled: !lido, text: 'Estudar',
-          onclick: () => { estado.selEstudo = f.id; renderSeletores(); mostrar('estudo'); } }),
         el('button', { class: 'btn', type: 'button', disabled: !lido, text: 'Cartões',
           onclick: () => { estado.selCartoes = f.id; renderSeletores(); mostrar('cartoes'); } }),
         el('button', { class: 'btn perigo', type: 'button', text: 'Apagar',
@@ -677,7 +686,7 @@ async function carregarFicheiros() {
 /* ---------- Seletores ---------- */
 function renderSeletores() {
   const lidos = estado.ficheiros.filter((f) => f.estado === 'lido');
-  for (const [sel, chave] of [[$('#sel-estudo'), 'selEstudo'], [$('#sel-cartoes'), 'selCartoes']]) {
+  for (const [sel, chave] of [[$('#sel-cartoes'), 'selCartoes']]) {
     const atual = lidos.some((f) => f.id === estado[chave]) ? estado[chave] : (lidos[0] ? lidos[0].id : null);
     estado[chave] = atual;
     if (lidos.length) {
@@ -691,17 +700,26 @@ function renderSeletores() {
 }
 
 /* ---------- Estudo ---------- */
+const CHAT_ID = 'geral';
+
+async function limparChat() {
+  const confirmado = await confirmar(
+    'Limpar a conversa?',
+    'As perguntas e respostas desta conversa serão apagadas deste navegador. Esta ação não pode ser desfeita.',
+    'Limpar'
+  );
+  if (!confirmado) return;
+  lsApagar('conversa:' + CHAT_ID);
+  renderConversa();
+  toast('Conversa limpa.');
+}
+
 function renderConversa() {
   const caixa = $('#msgs');
   caixa.replaceChildren();
-  const item = ficheiroPorId(estado.selEstudo);
-  if (!item) {
-    caixa.append(el('p', { class: 'vazio', text: 'Carrega um manual na página Início para começar.' }));
-    return;
-  }
-  const mensagens = obterConversa(item.id);
+  const mensagens = obterConversa(CHAT_ID);
   if (!mensagens.length) {
-    caixa.append(el('p', { class: 'vazio', text: `Pergunta o que quiseres sobre «${item.name}». Respondo com base no texto desse ficheiro.` }));
+    caixa.append(el('p', { class: 'vazio', text: 'Escreve a tua dúvida abaixo. Se indicares a matéria, a explicação fica mais direcionada.' }));
   }
   for (const m of mensagens) {
     caixa.append(el('div', { class: 'bolha ' + (m.role === 'user' ? 'user' : m.erro ? 'erro' : 'ia'), text: m.text }));
@@ -721,21 +739,15 @@ async function enviarPergunta(evento) {
   const input = $('#pergunta');
   const pergunta = input.value.trim();
   if (!pergunta) return;
-  const item = ficheiroPorId(estado.selEstudo);
-  if (!item) {
-    toast('Escolhe um manual com texto legível primeiro.', 'aviso');
-    return;
-  }
-
-  const mensagens = obterConversa(item.id);
-  mensagens.push({ role: 'user', text: pergunta });
-  guardarConversa(item.id, mensagens);
+  const materia = $('#materia').value.trim();
+  const mensagens = obterConversa(CHAT_ID);
+  mensagens.push({ role: 'user', text: materia ? `[${materia}] ${pergunta}` : pergunta });
+  guardarConversa(CHAT_ID, mensagens);
   input.value = '';
   definirOcupadoEstudo(true);
   renderConversa();
 
   try {
-    const trechos = escolherTrechos(dividir(item.texto), pergunta, 6).join('\n---\n');
     const historico = mensagens
       .slice(-7, -1)
       .filter((m) => !m.erro)
@@ -743,17 +755,17 @@ async function enviarPergunta(evento) {
     const resposta = await perguntarIA([
       {
         role: 'system',
-        content: `Respondes em português europeu, de forma clara e didática. Usa apenas os trechos fornecidos do documento «${item.name}». Se a resposta não estiver nos trechos, diz isso com clareza e sugere o que procurar. Não inventes factos.`
+        content: 'És um explicador de estudo para estudantes, em português europeu. Explica de forma clara, passo a passo, com exemplos quando ajudam. Se a dúvida for ambígua, pede a informação em falta. Se não tiveres certeza de um facto, diz isso.'
       },
       ...historico,
-      { role: 'user', content: `Trechos do documento:\n${trechos}\n\nPergunta: ${pergunta}` }
+      { role: 'user', content: materia ? `Matéria: ${materia}\nDúvida: ${pergunta}` : `Dúvida: ${pergunta}` }
     ]);
-    mensagens.push({ role: 'assistant', text: resposta || 'Não obtive resposta. Tenta reformular a pergunta.' });
+    mensagens.push({ role: 'assistant', text: resposta || 'Não obtive resposta. Tenta reformular a dúvida.' });
   } catch (e) {
     mensagens.push({ role: 'assistant', text: e.message, erro: true });
   }
 
-  guardarConversa(item.id, mensagens);
+  guardarConversa(CHAT_ID, mensagens);
   definirOcupadoEstudo(false);
   renderConversa();
 }
@@ -891,7 +903,7 @@ function ligarEventos() {
     if (lista.length) adicionarFicheiros(lista);
   });
 
-  $('#sel-estudo').addEventListener('change', (e) => { estado.selEstudo = e.target.value; renderConversa(); });
+  $('#btn-limpar-chat').addEventListener('click', limparChat);
   $('#sel-cartoes').addEventListener('change', (e) => {
     estado.selCartoes = e.target.value;
     estado.cartoes = [];
