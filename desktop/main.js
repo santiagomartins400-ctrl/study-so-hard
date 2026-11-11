@@ -1,6 +1,6 @@
 'use strict';
 const path = require('path');
-const { app, BrowserWindow, Menu, dialog, shell } = require('electron');
+const { app, BrowserWindow, Menu, dialog, net, shell } = require('electron');
 
 // Endereço publicado no GitHub Pages. A aplicação carrega sempre a versão mais recente.
 const APP_URL = 'https://santiagomartins400-ctrl.github.io/study-so-hard/app.html';
@@ -57,8 +57,31 @@ function criarJanela() {
     console.error('Falha ao carregar', codigo, descricao);
   });
 
-  janela.loadURL(APP_URL);
   janela.on('closed', () => { janela = null; });
+  carregarAplicacao();
+}
+
+// Se o endereço online não responder com sucesso (sem Internet, ou GitHub Pages
+// ainda não ativo), abre a cópia local em vez de mostrar uma página de erro.
+async function carregarAplicacao() {
+  let online = false;
+  try {
+    const resposta = await net.fetch(APP_URL, { method: 'HEAD' });
+    online = resposta.ok;
+  } catch (e) {
+    online = false;
+  }
+
+  if (online) {
+    janela.loadURL(APP_URL);
+  } else {
+    janela.loadFile(COPIA_LOCAL).catch(() => {
+      janela.webContents.loadURL(
+        'data:text/html;charset=utf-8,' +
+        encodeURIComponent('<h1>Study So Hard</h1><p>Não foi possível abrir a aplicação. Reinstala a versão mais recente.</p>')
+      );
+    });
+  }
 }
 
 // Instância única: se o utilizador abrir de novo, foca a janela existente.
