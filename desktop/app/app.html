@@ -30,6 +30,41 @@ p{margin:0 0 .75em}
 .vazio{color:var(--muted);text-align:center;padding:18px 8px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
+/* Modo escuro (aplicado por JavaScript com data-modo="escuro") */
+:root[data-modo="escuro"]{
+  --bg:#0e1120;
+  --panel:rgba(28,32,52,.6);
+  --panel2:rgba(255,255,255,.06);
+  --line:rgba(255,255,255,.1);
+  --text:#eef0f8;
+  --muted:#9aa1bd;
+  --shadow:0 8px 30px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+:root[data-modo="escuro"] dialog{background:rgba(24,27,43,.9)}
+:root[data-modo="escuro"] .pill{background:rgba(16,185,129,.18);color:#6ee7b7}
+:root[data-modo="escuro"] .tile .ico-grande{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+
+/* Cartão de estado no topo e atalhos */
+.hero-estado{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:22px;border-radius:24px;color:#fff;background:linear-gradient(135deg,#10b981,#06b6d4 60%,var(--accent));box-shadow:0 18px 40px color-mix(in srgb,#10b981 30%,transparent);position:relative;overflow:hidden;min-width:0}
+.hero-estado h2{color:#fff;margin:0 0 4px;font-size:1.25rem}
+.hero-estado p{margin:0;opacity:.92;overflow-wrap:anywhere}
+.anel-ok{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.2);flex:0 0 auto;animation:pulsa-anel 2.8s ease-out infinite}
+.anel-ok svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.hero-texto{flex:1 1 180px;min-width:0}
+.hero-btn{background:#fff;color:#0b7a5a;box-shadow:none;border:0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px;margin:16px 0 22px}
+.tile{display:flex;flex-direction:column;gap:10px}
+.tile h3{margin:0;font-size:1rem}
+.ico-grande{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+.ico-grande svg{width:22px;height:22px}
+.pill{align-self:flex-start;font-size:.78rem;padding:3px 10px;border-radius:999px;background:#e8f8f1;color:#0b7a5a}
+.tile .btn{margin-top:auto;align-self:flex-start}
+.ico{width:20px;height:20px;flex:0 0 auto;stroke-width:2}
+.tabs .tab{display:flex;align-items:center;gap:10px}
+.tabs .tab span{min-width:0}
+@keyframes pulsa-anel{0%{box-shadow:0 0 0 0 rgba(255,255,255,.45)}70%{box-shadow:0 0 0 14px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+
 /* Fundo com brilho animado */
 .glow{position:fixed;inset:-25vmax;z-index:0;pointer-events:none;
   background:
@@ -128,7 +163,7 @@ dialog h2{margin-top:0}
   .app{grid-template-columns:minmax(0,1fr);padding-bottom:84px}
   .lateral{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;flex-direction:row;padding:8px 10px calc(8px + env(safe-area-inset-bottom));border-right:0;border-top:1px solid var(--line);z-index:20}
   .tabs{flex-direction:row;width:100%;gap:4px}
-  .tabs .tab{flex:1;text-align:center;padding:9px 2px;font-size:.8rem}
+  .tabs .tab{flex:1;flex-direction:column;justify-content:center;gap:2px;text-align:center;padding:9px 2px;font-size:.8rem}
 }
 @media (max-width:520px){
   h1{font-size:1.4rem}
@@ -146,18 +181,50 @@ dialog h2{margin-top:0}
 <div class="app">
 <aside class="lateral">
   <nav class="tabs" aria-label="Secções">
-    <button class="tab" type="button" data-vista="inicio" aria-current="page">Início</button>
-    <button class="tab" type="button" data-vista="estudo">Estudo</button>
-    <button class="tab" type="button" data-vista="cartoes">Cartões</button>
-    <button class="tab" type="button" data-vista="definicoes">Definições</button>
+    <button class="tab" type="button" data-vista="inicio" aria-current="page"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>Início</span></button>
+    <button class="tab" type="button" data-vista="estudo"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span>Estudo</span></button>
+    <button class="tab" type="button" data-vista="cartoes"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="7" width="13" height="12" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v10"/></svg><span>Cartões</span></button>
+    <button class="tab" type="button" data-vista="definicoes"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Definições</span></button>
   </nav>
 </aside>
 
 <main class="wrap">
 
   <section id="inicio" class="vista ativa" aria-labelledby="t-inicio">
+    <div class="hero-estado" role="status">
+      <div class="anel-ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <div class="hero-texto">
+        <h2>Estás pronto para estudar</h2>
+        <p id="hero-texto">Ainda não carregaste materiais. Podes já tirar dúvidas.</p>
+      </div>
+      <button class="btn hero-btn" type="button" data-vista-link="estudo">Tirar uma dúvida</button>
+    </div>
+
+    <div class="tiles">
+      <article class="card tile">
+        <span class="ico-grande" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg></span>
+        <h3>Materiais</h3>
+        <span id="tile-materiais" class="pill">0 ficheiros</span>
+        <p class="sub">Manuais e apontamentos que a app pode usar.</p>
+      </article>
+      <article class="card tile">
+        <span class="ico-grande" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span>
+        <h3>Dúvidas</h3>
+        <span class="pill">Disponível</span>
+        <p class="sub">Pergunta sobre qualquer matéria, com explicações.</p>
+        <button class="btn" type="button" data-vista-link="estudo">Abrir</button>
+      </article>
+      <article class="card tile">
+        <span class="ico-grande" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="13" height="12" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v10"/></svg></span>
+        <h3>Cartões</h3>
+        <span id="tile-cartoes" class="pill">0 manuais disponíveis</span>
+        <p class="sub">Cartões de revisão a partir dos teus materiais.</p>
+        <button class="btn" type="button" data-vista-link="cartoes">Abrir</button>
+      </article>
+    </div>
+
     <h1 id="t-inicio">Os teus materiais</h1>
-    <p class="sub">Carrega manuais e apontamentos. A IA responde apenas com base no que carregaste.</p>
+    <p class="sub">Carrega manuais e apontamentos para os usar nos cartões e nas dúvidas.</p>
 
     <label id="drop" class="drop" for="ficheiros">
       <input id="ficheiros" class="sr" type="file" multiple>
@@ -206,7 +273,14 @@ dialog h2{margin-top:0}
   <section id="definicoes" class="vista" aria-labelledby="t-definicoes">
     <h1 id="t-definicoes">Definições</h1>
     <div class="card stack">
-      <h2>Tema</h2>
+      <h2>Aparência</h2>
+      <div class="temas">
+        <button class="tema" type="button" data-modo-opcao="claro" aria-pressed="true"><i style="--c1:#ffffff;--c2:#c9cfe0"></i>Claro</button>
+        <button class="tema" type="button" data-modo-opcao="escuro" aria-pressed="false"><i style="--c1:#1b1f33;--c2:#0e1120"></i>Escuro</button>
+        <button class="tema" type="button" data-modo-opcao="auto" aria-pressed="false"><i style="--c1:#ffffff;--c2:#0e1120"></i>Automático</button>
+      </div>
+
+      <h2>Cor</h2>
       <div class="temas">
         <button class="tema" type="button" data-tema="azul" style="--c1:#6d5cff;--c2:#22d3ee" aria-pressed="true"><i></i>Azul</button>
         <button class="tema" type="button" data-tema="rosa" style="--c1:#ec4899;--c2:#f59e0b" aria-pressed="false"><i></i>Rosa</button>
@@ -368,7 +442,8 @@ function obterDefinicoes() {
   return {
     apiKey: typeof d.apiKey === 'string' ? d.apiKey : '',
     model: typeof d.model === 'string' ? d.model : 'gpt-4o-mini',
-    tema: TEMAS[d.tema] ? d.tema : 'azul'
+    tema: TEMAS[d.tema] ? d.tema : 'azul',
+    modo: ['claro', 'escuro', 'auto'].includes(d.modo) ? d.modo : 'claro'
   };
 }
 
@@ -610,7 +685,23 @@ function mostrar(nome) {
 }
 
 /* ---------- Início ---------- */
+function atualizarResumo() {
+  const total = estado.ficheiros.length;
+  const lidos = estado.ficheiros.filter((f) => f.estado === 'lido').length;
+  const texto = $('#hero-texto');
+  if (texto) {
+    texto.textContent = lidos
+      ? `${lidos} ${lidos === 1 ? 'material pronto' : 'materiais prontos'} para estudar.`
+      : 'Ainda não carregaste materiais. Podes já tirar dúvidas.';
+  }
+  const tMateriais = $('#tile-materiais');
+  if (tMateriais) tMateriais.textContent = `${total} ${total === 1 ? 'ficheiro' : 'ficheiros'}`;
+  const tCartoes = $('#tile-cartoes');
+  if (tCartoes) tCartoes.textContent = `${lidos} ${lidos === 1 ? 'manual disponível' : 'manuais disponíveis'}`;
+}
+
 function renderBiblioteca() {
+  atualizarResumo();
   const lista = $('#lista');
   lista.replaceChildren();
   $('#vazio').hidden = estado.ficheiros.length > 0;
@@ -886,6 +977,14 @@ function renderCartoes() {
 }
 
 /* ---------- Definições ---------- */
+function aplicarModo(modo) {
+  const escolhido = ['claro', 'escuro', 'auto'].includes(modo) ? modo : 'claro';
+  const escuroSistema = Boolean(window.matchMedia) && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const escuro = escolhido === 'escuro' || (escolhido === 'auto' && escuroSistema);
+  document.documentElement.dataset.modo = escuro ? 'escuro' : 'claro';
+  $$('[data-modo-opcao]').forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.modoOpcao === escolhido)));
+}
+
 function aplicarTema(nome) {
   const [a, b] = TEMAS[nome] || TEMAS.azul;
   const raiz = document.documentElement.style;
@@ -899,6 +998,7 @@ function preencherDefinicoes() {
   $('#chave').value = d.apiKey;
   $('#modelo').value = d.model;
   aplicarTema(d.tema);
+  aplicarModo(d.modo);
 }
 
 async function apagarTudo() {
@@ -926,6 +1026,16 @@ async function apagarTudo() {
 /* ---------- Ligação de eventos ---------- */
 function ligarEventos() {
   $$('.tab').forEach((t) => t.addEventListener('click', () => mostrar(t.dataset.vista)));
+  $$('[data-vista-link]').forEach((b) => b.addEventListener('click', () => mostrar(b.dataset.vistaLink)));
+  $$('[data-modo-opcao]').forEach((btn) => btn.addEventListener('click', () => {
+    guardarDefinicoes({ modo: btn.dataset.modoOpcao });
+    aplicarModo(btn.dataset.modoOpcao);
+  }));
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => {
+      if (obterDefinicoes().modo === 'auto') aplicarModo('auto');
+    });
+  }
 
   const drop = $('#drop');
   const input = $('#ficheiros');
