@@ -200,29 +200,6 @@ dialog h2{margin-top:0}
       <button class="btn hero-btn" type="button" data-vista-link="estudo">Tirar uma dúvida</button>
     </div>
 
-    <div class="tiles">
-      <article class="card tile">
-        <span class="ico-grande" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg></span>
-        <h3>Materiais</h3>
-        <span id="tile-materiais" class="pill">0 ficheiros</span>
-        <p class="sub">Manuais e apontamentos que a app pode usar.</p>
-      </article>
-      <article class="card tile">
-        <span class="ico-grande" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span>
-        <h3>Dúvidas</h3>
-        <span class="pill">Disponível</span>
-        <p class="sub">Pergunta sobre qualquer matéria, com explicações.</p>
-        <button class="btn" type="button" data-vista-link="estudo">Abrir</button>
-      </article>
-      <article class="card tile">
-        <span class="ico-grande" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="13" height="12" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v10"/></svg></span>
-        <h3>Cartões</h3>
-        <span id="tile-cartoes" class="pill">0 manuais disponíveis</span>
-        <p class="sub">Cartões de revisão a partir dos teus materiais.</p>
-        <button class="btn" type="button" data-vista-link="cartoes">Abrir</button>
-      </article>
-    </div>
-
     <h1 id="t-inicio">Os teus materiais</h1>
     <p class="sub">Carrega manuais e apontamentos para os usar nos cartões e nas dúvidas.</p>
 
@@ -295,13 +272,15 @@ dialog h2{margin-top:0}
         <input id="chave" class="campo" type="password" autocomplete="off" spellcheck="false" placeholder="sk-…">
         <button id="btn-mostrar" class="btn" type="button" aria-pressed="false">Mostrar</button>
       </div>
-      <label class="rotulo" for="modelo">Modelo</label>
-      <select id="modelo" class="campo">
-        <option value="gpt-4o-mini">gpt-4o-mini (rápido e económico)</option>
-        <option value="gpt-4o">gpt-4o (mais capaz)</option>
-      </select>
       <div class="linha-form">
         <button id="btn-guardar" class="btn principal" type="button">Guardar definições</button>
+      </div>
+
+      <h2>Comunidade</h2>
+      <p class="sub">Tira dúvidas, partilha materiais e fala com outros alunos.</p>
+      <div class="linha-form">
+        <a id="link-discord" class="btn principal" href="#" target="_blank" rel="noopener" hidden>Entrar no servidor de Discord</a>
+        <span id="discord-breve" class="sub" hidden>Em breve.</span>
       </div>
 
       <h2>Dados</h2>
@@ -352,6 +331,8 @@ const URLS = {
 // Vazio = a app usa a chave que cada pessoa cola nas Definições.
 const PROXY_URL = '';
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
+// Link do servidor de Discord. Vazio = mostra «Em breve».
+const DISCORD_URL = '';
 const PALAVRAS_VAZIAS =new Set('a o os as um uma uns umas de do da dos das em no na nos nas e ou que para por com se the and of to in é ao aos à'.split(' '));
 
 /* ---------- Utilitários ---------- */
@@ -996,9 +977,15 @@ function aplicarTema(nome) {
 function preencherDefinicoes() {
   const d = obterDefinicoes();
   $('#chave').value = d.apiKey;
-  $('#modelo').value = d.model;
   aplicarTema(d.tema);
   aplicarModo(d.modo);
+  const linkDiscord = $('#link-discord');
+  if (DISCORD_URL) {
+    linkDiscord.href = DISCORD_URL;
+    linkDiscord.hidden = false;
+  } else {
+    $('#discord-breve').hidden = false;
+  }
 }
 
 async function apagarTudo() {
@@ -1079,8 +1066,7 @@ function ligarEventos() {
   });
   $('#btn-guardar').addEventListener('click', () => {
     const chave = $('#chave').value.trim();
-    const modelo = $('#modelo').value;
-    if (guardarDefinicoes({ apiKey: chave, model: modelo })) toast('Definições guardadas.');
+    if (guardarDefinicoes({ apiKey: chave })) toast('Definições guardadas.');
   });
   $('#btn-apagar').addEventListener('click', apagarTudo);
 }
