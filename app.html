@@ -176,6 +176,7 @@ dialog h2{margin-top:0}
     <h1 id="t-estudo">Estudo</h1>
     <p class="sub">Tira as tuas dúvidas de qualquer matéria, com explicações passo a passo.</p>
     <div class="card">
+      <div id="chave-estudo"></div>
       <label class="rotulo" for="materia">Matéria (opcional)</label>
       <input id="materia" class="campo" maxlength="80" placeholder="ex.: Matemática – derivadas">
       <div id="msgs" class="msgs" role="log" aria-live="polite"></div>
@@ -549,7 +550,7 @@ function espacar(lista, k) {
 /* ---------- Serviço de IA ---------- */
 async function perguntarIA(mensagens, json = false) {
   const { apiKey, model } = obterDefinicoes();
-  if (!apiKey) throw new Error('Falta a chave de API. Vai a Definições e cola a tua chave.');
+  if (!apiKey) throw new Error('Falta a chave de API. Cola-a no topo da secção Estudo ou em Definições.');
 
   let resposta;
   try {
@@ -702,6 +703,41 @@ function renderSeletores() {
 /* ---------- Estudo ---------- */
 const CHAT_ID = 'geral';
 
+// Mostra, dentro da secção Estudo, um campo para colar a chave quando ainda não existe.
+function renderChaveEstudo() {
+  const area = $('#chave-estudo');
+  if (!area) return;
+  if (obterDefinicoes().apiKey) {
+    area.replaceChildren();
+    return;
+  }
+  const campo = el('input', {
+    class: 'campo', type: 'password', id: 'chave-rapida', autocomplete: 'off',
+    spellcheck: 'false', placeholder: 'sk-…', 'aria-label': 'Chave de API da OpenAI'
+  });
+  const guardar = () => {
+    const valor = campo.value.trim();
+    if (!valor) {
+      toast('Escreve a chave antes de guardar.', 'aviso');
+      return;
+    }
+    if (guardarDefinicoes({ apiKey: valor })) {
+      const chaveDefinicoes = $('#chave');
+      if (chaveDefinicoes) chaveDefinicoes.value = valor;
+      toast('Chave guardada.');
+      renderChaveEstudo();
+    }
+  };
+  campo.addEventListener('keydown', (e) => { if (e.key === 'Enter') guardar(); });
+  area.replaceChildren(el('div', { class: 'card', style: 'margin-bottom:12px' },
+    el('h2', { text: 'Falta a chave da OpenAI' }),
+    el('p', { class: 'sub', text: 'Cola a tua chave de API para a IA poder responder. Fica guardada apenas neste navegador.' }),
+    el('div', { class: 'linha-form' },
+      campo,
+      el('button', { class: 'btn principal', type: 'button', text: 'Guardar', onclick: guardar }))
+  ));
+}
+
 async function limparChat() {
   const confirmado = await confirmar(
     'Limpar a conversa?',
@@ -717,6 +753,7 @@ async function limparChat() {
 function renderConversa() {
   const caixa = $('#msgs');
   caixa.replaceChildren();
+  renderChaveEstudo();
   const mensagens = obterConversa(CHAT_ID);
   if (!mensagens.length) {
     caixa.append(el('p', { class: 'vazio', text: 'Escreve a tua dúvida abaixo. Se indicares a matéria, a explicação fica mais direcionada.' }));
