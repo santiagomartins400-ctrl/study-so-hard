@@ -1,0 +1,8 @@
+name = "study-so-hard-ia"
+main = "worker.js"
+compatibility_date = "2024-09-01"
+
+# Origens autorizadas a usar o proxy (separadas por vírgulas).
+# Acrescenta "null" se quiseres aceitar a cópia local do instalador Windows.
+[vars]
+ORIGENS_PERMITIDAS = "https://santiagomartins400-ctrl.github.io,null"

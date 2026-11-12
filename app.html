@@ -274,7 +274,11 @@ const URLS = {
   xlsx: 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
   jszip: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
 };
-const PALAVRAS_VAZIAS = new Set('a o os as um uma uns umas de do da dos das em no na nos nas e ou que para por com se the and of to in é ao aos à'.split(' '));
+// Endereço do proxy da IA (ver proxy/README.md). Com um endereço, as pessoas não precisam de chave.
+// Vazio = a app usa a chave que cada pessoa cola nas Definições.
+const PROXY_URL = '';
+const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
+const PALAVRAS_VAZIAS =new Set('a o os as um uma uns umas de do da dos das em no na nos nas e ou que para por com se the and of to in é ao aos à'.split(' '));
 
 /* ---------- Utilitários ---------- */
 const $ = (s) => document.querySelector(s);
@@ -550,13 +554,16 @@ function espacar(lista, k) {
 /* ---------- Serviço de IA ---------- */
 async function perguntarIA(mensagens, json = false) {
   const { apiKey, model } = obterDefinicoes();
-  if (!apiKey) throw new Error('Falta a chave de API. Cola-a no topo da secção Estudo ou em Definições.');
+  const usaProxy = Boolean(PROXY_URL);
+  if (!usaProxy && !apiKey) throw new Error('Falta a chave de API. Cola-a no topo da secção Estudo ou em Definições.');
 
   let resposta;
   try {
-    resposta = await fetch('https://api.openai.com/v1/chat/completions', {
+    resposta = await fetch(usaProxy ? PROXY_URL : OPENAI_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + apiKey },
+      headers: usaProxy
+        ? { 'Content-Type': 'application/json' }
+        : { 'Content-Type': 'application/json', Authorization: 'Bearer ' + apiKey },
       body: JSON.stringify({
         model,
         messages: mensagens,
@@ -707,7 +714,7 @@ const CHAT_ID = 'geral';
 function renderChaveEstudo() {
   const area = $('#chave-estudo');
   if (!area) return;
-  if (obterDefinicoes().apiKey) {
+  if (PROXY_URL || obterDefinicoes().apiKey) {
     area.replaceChildren();
     return;
   }
