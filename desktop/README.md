@@ -2,7 +2,7 @@
 
 Aplicação Electron que abre a versão online do Lumen Study e instala-se no Windows como uma aplicação normal.
 
-Versão atual: 1.0.0
+Versão atual: 1.6.0
 
 ## Desenvolvimento
 

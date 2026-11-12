@@ -22,7 +22,7 @@ const alteracoes = [
   },
   {
     ficheiro: 'desktop/README.md',
-    trocar: (t) => t.replace(/(Versão\s+)\d+\.\d+\.\d+/g, `$1${versao}`)
+    trocar: (t) => t.replace(/(Versão(?:\s+atual:)?\s+)\d+\.\d+\.\d+/g, `$1${versao}`)
   },
   {
     ficheiro: '.github/workflows/build-windows.yml',
