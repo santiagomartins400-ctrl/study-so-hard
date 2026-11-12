@@ -15,7 +15,7 @@ function criarJanela() {
     height: 760,
     minWidth: 360,
     minHeight: 540,
-    title: 'Study So Hard',
+    title: 'Lumen Study',
     backgroundColor: '#f3f4f8',
     autoHideMenuBar: true,
     webPreferences: {
@@ -51,7 +51,7 @@ function criarJanela() {
     janela.loadFile(COPIA_LOCAL).catch(() => {
       janela.webContents.loadURL(
         'data:text/html;charset=utf-8,' +
-        encodeURIComponent('<h1>Study So Hard</h1><p>Não foi possível abrir a aplicação. Verifica a ligação à Internet e reinicia.</p>')
+        encodeURIComponent('<h1>Lumen Study</h1><p>Não foi possível abrir a aplicação. Verifica a ligação à Internet e reinicia.</p>')
       );
     });
     console.error('Falha ao carregar', codigo, descricao);
@@ -78,7 +78,7 @@ async function carregarAplicacao() {
     janela.loadFile(COPIA_LOCAL).catch(() => {
       janela.webContents.loadURL(
         'data:text/html;charset=utf-8,' +
-        encodeURIComponent('<h1>Study So Hard</h1><p>Não foi possível abrir a aplicação. Reinstala a versão mais recente.</p>')
+        encodeURIComponent('<h1>Lumen Study</h1><p>Não foi possível abrir a aplicação. Reinstala a versão mais recente.</p>')
       );
     });
   }

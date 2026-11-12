@@ -1,6 +1,6 @@
-# Study So Hard para Windows
+# Lumen Study para Windows
 
-Aplicação Electron que abre a versão online do Study So Hard e instala-se no Windows como uma aplicação normal.
+Aplicação Electron que abre a versão online do Lumen Study e instala-se no Windows como uma aplicação normal.
 
 Versão atual: 1.0.0
 

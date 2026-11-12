@@ -1,4 +1,4 @@
-// Proxy do Study So Hard para a OpenAI (Cloudflare Worker).
+// Proxy do Lumen Study para a OpenAI (Cloudflare Worker).
 // A chave da OpenAI fica no servidor (segredo OPENAI_API_KEY) e nunca chega ao navegador.
 // Variáveis: OPENAI_API_KEY (segredo), ORIGENS_PERMITIDAS (lista separada por vírgulas).
 

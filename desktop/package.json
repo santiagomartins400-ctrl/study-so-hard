@@ -1,9 +1,9 @@
 {
   "name": "study-so-hard",
-  "productName": "Study So Hard",
-  "version": "1.5.0",
-  "description": "Study So Hard para Windows",
-  "author": "Study So Hard",
+  "productName": "Lumen Study",
+  "version": "1.6.0",
+  "description": "Lumen Study para Windows",
+  "author": "Lumen Study",
   "license": "UNLICENSED",
   "private": true,
   "main": "main.js",
@@ -17,7 +17,7 @@
   },
   "build": {
     "appId": "pt.studysohard.app",
-    "productName": "Study So Hard",
+    "productName": "Lumen Study",
     "directories": {
       "output": "dist"
     },
@@ -39,8 +39,8 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Study So Hard",
-      "artifactName": "Study-So-Hard-Setup-${version}.${ext}"
+      "shortcutName": "Lumen Study",
+      "artifactName": "Lumen-Study-Setup-${version}.${ext}"
     }
   }
 }
