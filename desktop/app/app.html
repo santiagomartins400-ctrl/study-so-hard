@@ -45,6 +45,10 @@ p{margin:0 0 .75em}
 :root[data-modo="escuro"] .pill{background:rgba(16,185,129,.18);color:#6ee7b7}
 :root[data-modo="escuro"] .tile .ico-grande{background:color-mix(in srgb,var(--accent) 22%,transparent)}
 
+.passos-guia{margin-bottom:18px}
+.passos-guia h2{margin:0 0 8px;font-size:1.05rem}
+.passos{margin:0;padding-left:1.2em;color:var(--muted)}
+.passos li{margin-bottom:6px}
 /* Cartão de estado no topo e atalhos */
 .hero-estado{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:22px;border-radius:24px;color:#fff;background:linear-gradient(135deg,#10b981,#06b6d4 60%,var(--accent));box-shadow:0 18px 40px color-mix(in srgb,#10b981 30%,transparent);position:relative;overflow:hidden;min-width:0}
 .hero-estado h2{color:#fff;margin:0 0 4px;font-size:1.25rem}
@@ -200,12 +204,21 @@ dialog h2{margin-top:0}
       <button class="btn hero-btn" type="button" data-vista-link="estudo">Tirar uma dúvida</button>
     </div>
 
+    <section class="card passos-guia" aria-label="Como funciona">
+      <h2>Como funciona</h2>
+      <ol class="passos">
+        <li><strong>Carrega</strong> os teus manuais, resumos ou apontamentos.</li>
+        <li><strong>Pergunta</strong> o que não percebes, em qualquer matéria.</li>
+        <li><strong>Revê</strong> com cartões de perguntas e respostas.</li>
+      </ol>
+    </section>
+
     <h1 id="t-inicio">Os teus materiais</h1>
     <p class="sub">Carrega manuais e apontamentos para os usar nos cartões e nas dúvidas.</p>
 
     <label id="drop" class="drop" for="ficheiros">
       <input id="ficheiros" class="sr" type="file" multiple>
-      <strong>Arrasta ficheiros para aqui</strong><br>
+      <strong>Arrasta os ficheiros para aqui</strong><br>
       ou <span class="link">escolhe no computador</span>
       <small>PDF, Word, PowerPoint, Excel, texto e outros. Máximo de 25 MB por ficheiro.</small>
     </label>
@@ -221,7 +234,7 @@ dialog h2{margin-top:0}
     <p class="sub">Tira as tuas dúvidas de qualquer matéria, com explicações passo a passo.</p>
     <div class="card">
       <div id="chave-estudo"></div>
-      <label class="rotulo" for="materia">Matéria (opcional)</label>
+      <label class="rotulo" for="materia">Disciplina ou tema (opcional)</label>
       <input id="materia" class="campo" maxlength="80" placeholder="ex.: Matemática – derivadas">
       <div id="msgs" class="msgs" role="log" aria-live="polite"></div>
       <form id="form-pergunta" class="linha-form" autocomplete="off">
@@ -236,7 +249,8 @@ dialog h2{margin-top:0}
   </section>
 
   <section id="cartoes" class="vista" aria-labelledby="t-cartoes">
-    <h1 id="t-cartoes">Cartões de revisão</h1>
+    <h1 id="t-cartoes">Cartões para rever</h1>
+    <p class="sub">Perguntas e respostas criadas a partir de um dos teus ficheiros.</p>
     <div class="card">
       <label class="rotulo" for="sel-cartoes">Manual</label>
       <select id="sel-cartoes" class="campo"></select>
@@ -254,10 +268,10 @@ dialog h2{margin-top:0}
       <div class="temas">
         <button class="tema" type="button" data-modo-opcao="claro" aria-pressed="true"><i style="--c1:#ffffff;--c2:#c9cfe0"></i>Claro</button>
         <button class="tema" type="button" data-modo-opcao="escuro" aria-pressed="false"><i style="--c1:#1b1f33;--c2:#0e1120"></i>Escuro</button>
-        <button class="tema" type="button" data-modo-opcao="auto" aria-pressed="false"><i style="--c1:#ffffff;--c2:#0e1120"></i>Automático</button>
+        <button class="tema" type="button" data-modo-opcao="auto" aria-pressed="false"><i style="--c1:#ffffff;--c2:#0e1120"></i>Igual ao aparelho</button>
       </div>
 
-      <h2>Cor</h2>
+      <h2>Cor de destaque</h2>
       <div class="temas">
         <button class="tema" type="button" data-tema="azul" style="--c1:#6d5cff;--c2:#22d3ee" aria-pressed="true"><i></i>Azul</button>
         <button class="tema" type="button" data-tema="rosa" style="--c1:#ec4899;--c2:#f59e0b" aria-pressed="false"><i></i>Rosa</button>
@@ -266,8 +280,8 @@ dialog h2{margin-top:0}
       </div>
 
       <h2>Serviço de IA</h2>
-      <p class="sub">A IA é fornecida pela OpenAI. A tua chave fica guardada apenas neste navegador e é enviada só para a OpenAI.</p>
-      <label class="rotulo" for="chave">Chave de API</label>
+      <p class="sub">A chave permite à app pedir respostas à IA. Fica guardada só neste aparelho.</p>
+      <label class="rotulo" for="chave">Chave da IA</label>
       <div class="linha-form">
         <input id="chave" class="campo" type="password" autocomplete="off" spellcheck="false" placeholder="sk-…">
         <button id="btn-mostrar" class="btn" type="button" aria-pressed="false">Mostrar</button>
@@ -283,8 +297,8 @@ dialog h2{margin-top:0}
         <span id="discord-breve" class="sub" hidden>Em breve.</span>
       </div>
 
-      <h2>Dados</h2>
-      <p class="sub">Os ficheiros e as conversas ficam neste navegador.</p>
+      <h2>Os teus dados</h2>
+      <p class="sub">Tudo o que carregas fica guardado só neste aparelho.</p>
       <div class="linha-form">
         <button id="btn-apagar" class="btn perigo" type="button">Apagar ficheiros e conversas</button>
       </div>
@@ -611,7 +625,7 @@ function espacar(lista, k) {
 async function perguntarIA(mensagens, json = false) {
   const { apiKey, model } = obterDefinicoes();
   const usaProxy = Boolean(PROXY_URL);
-  if (!usaProxy && !apiKey) throw new Error('Falta a chave de API. Cola-a no topo da secção Estudo ou em Definições.');
+  if (!usaProxy && !apiKey) throw new Error('Falta a chave da IA. Cola-a aqui em cima ou em Definições.');
 
   let resposta;
   try {
@@ -634,8 +648,8 @@ async function perguntarIA(mensagens, json = false) {
   if (!resposta.ok) {
     let detalhe = '';
     try { detalhe = (await resposta.json()).error?.message || ''; } catch (e) { /* sem corpo */ }
-    if (resposta.status === 401) throw new Error('A chave de API foi recusada. Confirma-a nas Definições.');
-    if (resposta.status === 429) throw new Error('Limite de pedidos atingido ou saldo insuficiente na conta da OpenAI. Tenta mais tarde.');
+    if (resposta.status === 401) throw new Error('A chave da IA foi recusada. Confirma-a nas Definições.');
+    if (resposta.status === 429) throw new Error('Limite de pedidos atingido ou saldo insuficiente no serviço de IA. Tenta mais tarde.');
     throw new Error(`O serviço de IA devolveu um erro (${resposta.status}). ${detalhe}`.trim());
   }
 
@@ -792,7 +806,7 @@ function renderChaveEstudo() {
   }
   const campo = el('input', {
     class: 'campo', type: 'password', id: 'chave-rapida', autocomplete: 'off',
-    spellcheck: 'false', placeholder: 'sk-…', 'aria-label': 'Chave de API da OpenAI'
+    spellcheck: 'false', placeholder: 'sk-…', 'aria-label': 'Chave da IA'
   });
   const guardar = () => {
     const valor = campo.value.trim();
@@ -809,8 +823,8 @@ function renderChaveEstudo() {
   };
   campo.addEventListener('keydown', (e) => { if (e.key === 'Enter') guardar(); });
   area.replaceChildren(el('div', { class: 'card', style: 'margin-bottom:12px' },
-    el('h2', { text: 'Falta a chave da OpenAI' }),
-    el('p', { class: 'sub', text: 'Cola a tua chave de API para a IA poder responder. Fica guardada apenas neste navegador.' }),
+    el('h2', { text: 'Falta a chave da IA' }),
+    el('p', { class: 'sub', text: 'Cola a chave para a IA poder responder. Fica guardada só neste aparelho.' }),
     el('div', { class: 'linha-form' },
       campo,
       el('button', { class: 'btn principal', type: 'button', text: 'Guardar', onclick: guardar }))
