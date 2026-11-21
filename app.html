@@ -49,6 +49,10 @@ p{margin:0 0 .75em}
 .passos-guia h2{margin:0 0 8px;font-size:1.05rem}
 .passos{margin:0;padding-left:1.2em;color:var(--muted)}
 .passos li{margin-bottom:6px}
+.linha-disc{margin-bottom:16px}
+.linha-disc .rotulo{margin-top:0}
+.grupo-disc{margin-top:22px}
+.grupo-titulo{font-size:.95rem;font-weight:700;color:var(--muted);margin:0 0 10px}
 /* Cartão de estado no topo e atalhos */
 .hero-estado{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:22px;border-radius:24px;color:#fff;background:linear-gradient(135deg,#10b981,#06b6d4 60%,var(--accent));box-shadow:0 18px 40px color-mix(in srgb,#10b981 30%,transparent);position:relative;overflow:hidden;min-width:0}
 .hero-estado h2{color:#fff;margin:0 0 4px;font-size:1.25rem}
@@ -216,6 +220,12 @@ dialog h2{margin-top:0}
     <h1 id="t-inicio">Os teus materiais</h1>
     <p class="sub">Carrega manuais e apontamentos para os usar nos cartões e nas dúvidas.</p>
 
+    <div class="card linha-disc">
+      <label class="rotulo" for="disciplina-upload">Disciplina dos próximos ficheiros</label>
+      <input id="disciplina-upload" class="campo" list="lista-disciplinas" maxlength="40" placeholder="ex.: Biologia (se deixares vazio, fica Geral)">
+      <datalist id="lista-disciplinas"></datalist>
+    </div>
+
     <label id="drop" class="drop" for="ficheiros">
       <input id="ficheiros" class="sr" type="file" multiple>
       <strong>Arrasta os ficheiros para aqui</strong><br>
@@ -263,23 +273,25 @@ dialog h2{margin-top:0}
 
   <section id="definicoes" class="vista" aria-labelledby="t-definicoes">
     <h1 id="t-definicoes">Definições</h1>
+
     <div class="card stack">
       <h2>Aparência</h2>
-      <div class="temas">
+      <p class="sub">Escolhe o fundo e a cor de destaque da app.</p>
+      <div class="temas" aria-label="Fundo">
         <button class="tema" type="button" data-modo-opcao="claro" aria-pressed="true"><i style="--c1:#ffffff;--c2:#c9cfe0"></i>Claro</button>
         <button class="tema" type="button" data-modo-opcao="escuro" aria-pressed="false"><i style="--c1:#1b1f33;--c2:#0e1120"></i>Escuro</button>
         <button class="tema" type="button" data-modo-opcao="auto" aria-pressed="false"><i style="--c1:#ffffff;--c2:#0e1120"></i>Igual ao aparelho</button>
       </div>
-
-      <h2>Cor de destaque</h2>
-      <div class="temas">
+      <div class="temas" aria-label="Cor de destaque">
         <button class="tema" type="button" data-tema="azul" style="--c1:#6d5cff;--c2:#22d3ee" aria-pressed="true"><i></i>Azul</button>
         <button class="tema" type="button" data-tema="rosa" style="--c1:#ec4899;--c2:#f59e0b" aria-pressed="false"><i></i>Rosa</button>
         <button class="tema" type="button" data-tema="verde" style="--c1:#10b981;--c2:#06b6d4" aria-pressed="false"><i></i>Verde</button>
         <button class="tema" type="button" data-tema="laranja" style="--c1:#f97316;--c2:#e11d48" aria-pressed="false"><i></i>Laranja</button>
       </div>
+    </div>
 
-      <h2>Serviço de IA</h2>
+    <div class="card stack">
+      <h2>Inteligência artificial</h2>
       <p class="sub">A chave permite à app pedir respostas à IA. Fica guardada só neste aparelho.</p>
       <label class="rotulo" for="chave">Chave da IA</label>
       <div class="linha-form">
@@ -287,16 +299,20 @@ dialog h2{margin-top:0}
         <button id="btn-mostrar" class="btn" type="button" aria-pressed="false">Mostrar</button>
       </div>
       <div class="linha-form">
-        <button id="btn-guardar" class="btn principal" type="button">Guardar definições</button>
+        <button id="btn-guardar" class="btn principal" type="button">Guardar chave</button>
       </div>
+    </div>
 
+    <div class="card stack">
       <h2>Comunidade</h2>
       <p class="sub">Tira dúvidas, partilha materiais e fala com outros alunos.</p>
       <div class="linha-form">
         <a id="link-discord" class="btn principal" href="#" target="_blank" rel="noopener" hidden>Entrar no servidor de Discord</a>
         <span id="discord-breve" class="sub" hidden>Em breve.</span>
       </div>
+    </div>
 
+    <div class="card stack">
       <h2>Os teus dados</h2>
       <p class="sub">Tudo o que carregas fica guardado só neste aparelho.</p>
       <div class="linha-form">
@@ -701,22 +717,53 @@ function renderBiblioteca() {
   lista.replaceChildren();
   $('#vazio').hidden = estado.ficheiros.length > 0;
 
+  const grupos = new Map();
   for (const f of estado.ficheiros) {
-    const lido = f.estado === 'lido';
-    const extensao = (f.name.split('.').pop() || 'ficheiro').slice(0, 5).toUpperCase();
-    lista.append(el('article', { class: 'card ficheiro' },
-      el('div', { class: 'ficheiro-topo' },
-        el('span', { class: 'ext', text: extensao }),
-        el('span', { class: 'badge ' + (lido ? 'ok' : 'off'), text: lido ? 'Pronto a estudar' : 'Sem texto legível' })),
-      el('h3', { text: f.name }),
-      el('p', { class: 'sub', text: formatarTamanho(f.size) + (f.erro ? ' · ' + f.erro : '') }),
-      el('div', { class: 'acoes-linha' },
-        el('button', { class: 'btn', type: 'button', disabled: !lido, text: 'Cartões',
-          onclick: () => { estado.selCartoes = f.id; renderSeletores(); mostrar('cartoes'); } }),
-        el('button', { class: 'btn perigo', type: 'button', text: 'Apagar',
-          onclick: () => apagarFicheiro(f) }))
-    ));
+    const nome = f.disciplina || 'Geral';
+    if (!grupos.has(nome)) grupos.set(nome, []);
+    grupos.get(nome).push(f);
   }
+  const nomes = [...grupos.keys()].sort((a, b) => a.localeCompare(b, 'pt'));
+
+  const datalist = $('#lista-disciplinas');
+  if (datalist) datalist.replaceChildren(...nomes.map((n) => el('option', { value: n })));
+
+  for (const nome of nomes) {
+    const itens = grupos.get(nome);
+    lista.append(el('section', { class: 'grupo-disc' },
+      el('h3', { class: 'grupo-titulo', text: `${nome} · ${itens.length} ${itens.length === 1 ? 'ficheiro' : 'ficheiros'}` }),
+      el('div', { class: 'grid' }, ...itens.map(cartaoFicheiro))));
+  }
+}
+
+function cartaoFicheiro(f) {
+  const lido = f.estado === 'lido';
+  const extensao = (f.name.split('.').pop() || 'ficheiro').slice(0, 5).toUpperCase();
+  return el('article', { class: 'card ficheiro' },
+    el('div', { class: 'ficheiro-topo' },
+      el('span', { class: 'ext', text: extensao }),
+      el('span', { class: 'badge ' + (lido ? 'ok' : 'off'), text: lido ? 'Pronto a estudar' : 'Sem texto legível' })),
+    el('h3', { text: f.name }),
+    el('p', { class: 'sub', text: formatarTamanho(f.size) + (f.erro ? ' · ' + f.erro : '') }),
+    el('label', { class: 'rotulo', for: 'disc-' + f.id, text: 'Disciplina' }),
+    el('input', { class: 'campo', id: 'disc-' + f.id, list: 'lista-disciplinas', maxlength: '40',
+      value: f.disciplina || 'Geral', onchange: (e) => mudarDisciplina(f, e.target.value) }),
+    el('div', { class: 'acoes-linha' },
+      el('button', { class: 'btn', type: 'button', disabled: !lido, text: 'Cartões',
+        onclick: () => { estado.selCartoes = f.id; renderSeletores(); mostrar('cartoes'); } }),
+      el('button', { class: 'btn perigo', type: 'button', text: 'Apagar', onclick: () => apagarFicheiro(f) })));
+}
+
+async function mudarDisciplina(f, valor) {
+  const nova = valor.trim().slice(0, 40) || 'Geral';
+  if (nova === (f.disciplina || 'Geral')) return;
+  try {
+    await guardarBD({ ...f, disciplina: nova });
+    toast(`Movido para «${nova}».`);
+  } catch (e) {
+    toast('Não consegui guardar a disciplina. Tenta outra vez.', 'erro');
+  }
+  await carregarFicheiros();
 }
 
 async function adicionarFicheiros(lista) {
@@ -735,7 +782,7 @@ async function adicionarFicheiros(lista) {
     } catch (e) {
       erro = e.message || 'Não consegui ler este ficheiro.';
     }
-    const item = { id: uid(), name: f.name, size: f.size, addedAt: Date.now(), estado: texto ? 'lido' : 'sem-leitura', texto, erro };
+    const item = { id: uid(), disciplina: $('#disciplina-upload').value.trim().slice(0, 40) || 'Geral', name: f.name, size: f.size, addedAt: Date.now(), estado: texto ? 'lido' : 'sem-leitura', texto, erro };
     try {
       await guardarBD(item);
     } catch (e) {
