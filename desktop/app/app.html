@@ -80,8 +80,13 @@ main{position:relative;z-index:1;padding:32px 0 80px;min-width:0}
 .vista.ativa{display:block;animation:entra .25s ease}
 
 /* Navegação */
+.nav-grupo{display:flex;flex-direction:column;gap:2px}
+.nav-grupo+.nav-grupo{margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
+.nav-rotulo{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 12px;margin-bottom:8px}
+.tabs{gap:0}
+
 .tabs{display:flex;flex-direction:column;gap:2px}
-.tab{position:relative;display:flex;align-items:center;gap:12px;width:100%;padding:9px 12px;border:0;border-radius:10px;background:none;color:var(--muted);font:inherit;font-size:.92rem;font-weight:500;text-align:left;cursor:pointer;transition:background var(--transicao),color var(--transicao)}
+.tab{position:relative;display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border:0;border-radius:10px;background:none;color:var(--muted);font:inherit;font-size:.92rem;font-weight:500;text-align:left;cursor:pointer;transition:background var(--transicao),color var(--transicao)}
 .tab:hover{background:var(--panel2);color:var(--text)}
 .tab[aria-current="page"]{color:var(--text);font-weight:600;background:var(--panel2)}
 .tab[aria-current="page"]::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
@@ -184,6 +189,9 @@ dialog p{color:var(--muted);font-size:.9rem}
   .app{grid-template-columns:minmax(0,1fr);padding-bottom:72px}
   .lateral{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;flex-direction:row;padding:6px 8px calc(6px + env(safe-area-inset-bottom));border-right:0;border-top:1px solid var(--line);z-index:20}
   .tabs{flex-direction:row;width:100%;gap:0}
+  .nav-grupo{flex-direction:row;flex:1;gap:0}
+  .nav-grupo+.nav-grupo{margin:0;padding:0;border:0;border-left:1px solid var(--line);padding-left:0}
+  .nav-rotulo{display:none}
   .tab{flex:1;flex-direction:column;justify-content:center;gap:3px;width:auto;padding:8px 0;font-size:.72rem;text-align:center}
   .tab[aria-current="page"]{background:none;color:var(--accent)}
   .tab[aria-current="page"]::before{display:none}
@@ -202,10 +210,16 @@ dialog p{color:var(--muted);font-size:.9rem}
 <div class="app">
 <aside class="lateral">
   <nav class="tabs" aria-label="Secções">
-    <button class="tab" type="button" data-vista="inicio" aria-current="page"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>Início</span></button>
-    <button class="tab" type="button" data-vista="estudo"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span>Estudo</span></button>
-    <button class="tab" type="button" data-vista="cartoes"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="7" width="13" height="12" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v10"/></svg><span>Cartões</span></button>
-    <button class="tab" type="button" data-vista="definicoes"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Definições</span></button>
+    <div class="nav-grupo">
+      <span class="nav-rotulo">Estudo</span>
+        <button class="tab" type="button" data-vista="inicio" aria-current="page"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>Início</span></button>
+        <button class="tab" type="button" data-vista="estudo"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span>Dúvidas</span></button>
+        <button class="tab" type="button" data-vista="cartoes"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="7" width="13" height="12" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v10"/></svg><span>Cartões</span></button>
+    </div>
+    <div class="nav-grupo">
+      <span class="nav-rotulo">Conta</span>
+        <button class="tab" type="button" data-vista="definicoes"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Definições</span></button>
+    </div>
   </nav>
 </aside>
 
